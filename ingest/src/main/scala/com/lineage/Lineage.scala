@@ -1,14 +1,13 @@
+package com.lineage
+
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.SQLContext
 import java.security.MessageDigest
-import org.apache.spark.sql.types.DataType
-import org.apache.spark.sql.types.DataTypes
-import org.apache.spark.sql.api.java.UDF1
 import org.apache.spark.sql.Dataset
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.SparkContext
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
+import scala.reflect.runtime.universe
 
 
 object Lineage {
@@ -31,6 +30,12 @@ object Lineage {
 					sparkSession.sql("select *, sha2m(struct(*)) as sha2 from delta_table")
 	}
 
+	/**
+	 * Merge delta table with the initial table for the first time
+	 * 
+	 * @param initialDf the initial table without the sha2 and sequence columns
+	 * @param deltaDf the delta table without the sha2 and sequence columns
+	 */
 	def addDeltaFirstTime(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val sparkSession = deltaDf.sparkSession
 					val initialDfSha = addHash(initialDf.drop("archive_date"))
@@ -67,7 +72,9 @@ object Lineage {
 	def main(args: Array[String]): Unit = {
 			    val conf = new SparkConf().setAppName("test").setMaster("local")
 					val sparkSession = SparkSession.builder().appName("test").master("local").getOrCreate()
-					import sparkSession.implicits._
+				  import sparkSession.implicits._
+					val c = sparkSession.sparkContext.textFile("").map { _.split("") }.map { x => Row(x) }
+					  
 					val df1 = sparkSession.createDataset(Seq((1,2, "date"), (3,4, "date2"))).toDF("col1", "col2", "archive_date")
 					val df2 = sparkSession.createDataset(Seq((1,2), (4,5))).toDF("col1", "col2")
 					addDeltaFirstTime(df1, df2).show()
