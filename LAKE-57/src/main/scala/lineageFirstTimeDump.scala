@@ -28,7 +28,7 @@ object lineageFirstTimeDump {
 
 	def addDeltaFirstTime(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val sparkSession = deltaDf.sparkSession
-					val initialDfSha = addHash(initialDf.drop("archive_date"))
+					val initialDfSha = addHash(initialDf.drop("seq"))
 					val deltaDfSha = addHash(deltaDf)
 
 					val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.
@@ -49,11 +49,12 @@ def main(args: Array[String]): Unit = {
     import sqlContext.implicits._
     val df1 = sqlContext.sql("select * from antuit_stage.data1")
     val df2 = sqlContext.sql("select * from antuit_stage.data2")
-    val df3 = addDeltaFirstTime(df1, df2)
-	df3.show()
-	val df4 = sqlContext.sql("select * from antuit_stage.data3")
-    val finalRes = addDeltaIncremental(df3, df4)
-	finalRes.show()
+    val res = addDeltaFirstTime(df1, df2)
+    res.show()
+    res.registerTempTable("mytempTable")
+	sqlContext.sql("drop table if exists antuit_stage.data3;create table antuit_stage.data3 as select * from mytempTable");
+
+
     }
 
 }
