@@ -52,7 +52,7 @@ object Lineage {
 	}
 
 	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-			    val initialDfSha = initialDfShaWithDate.drop("archive_date")
+			        val initialDfSha = initialDfShaWithDate.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
 					val deltaDfSha = addHash(deltaDf)
 
@@ -63,7 +63,7 @@ object Lineage {
 					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
 
 					val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.
-					reduceByKey((r1, r2) => r1).
+					reduceByKey((r1, r2) => r1)
 					map { case(sha2, row) => row }
 
 					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
