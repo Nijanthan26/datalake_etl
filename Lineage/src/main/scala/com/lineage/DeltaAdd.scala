@@ -43,7 +43,7 @@ object DeltaAdd {
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge") //Drop the Previously Processes table  from Data Lake
         sqlContext.sql(" create table antuit_stage."+args(0)+"_merge as select * from mytempTable") //Create a refreshed processed table in data lake
         sqlContext.sql("drop table if exists antuit_stage."+args(0)) //Drop the Previously Processes table  from Data Lake
-        sqlContext.sql(" create table antuit_stage."+args(0)+"as select * from antuit_stage."+args(0)+"_merge") //Create a refreshed processed table in data lake
+        sqlContext.sql(" create table antuit_stage."+args(0)+" as select * from antuit_stage."+args(0)+"_merge") //Create a refreshed processed table in data lake
         
     
       }
