@@ -14,7 +14,7 @@ object lineageDeltaAdd {
                                         sparkSession.udf.register("sha2m", (r: Row) => {
                                                 val sha2Hasher = MessageDigest.getInstance("SHA-256")
                                                                 val buf = new StringBuilder
-                                                                val bytes = r.mkString(",").getBytes
+                                                                val bytes = r.mkString("|").getBytes
                                                                 val hexString: StringBuffer = new StringBuffer
                                                                 sha2Hasher.digest(bytes).foreach { b => hexString.append(Integer.toHexString(0xFF & b))
                                                                 }
@@ -25,8 +25,10 @@ object lineageDeltaAdd {
 
                                         sparkSession.sql("select *, sha2m(struct(*)) as sha2 from delta_table")
         }
-        def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-                                val initialDfSha = initialDfShaWithDate.drop("seq")
+
+        def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDfWithDate: Dataset[Row]): Dataset[Row] = {
+                                val initialDfSha = initialDfShaWithDate.drop("archive_date")
+                                val deltaDf = deltaDfWithDate.drop("archive_date");
                                         val sparkSession = deltaDf.sparkSession
                                         val deltaDfSha = addHash(deltaDf)
 
@@ -35,8 +37,8 @@ object lineageDeltaAdd {
                                         deltaDfSha.createOrReplaceTempView("deltaDfSha")
                                         import org.apache.spark.sql.functions._
                                         val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
-
-                                        val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
+                                      val resd = deltaDfShaSeq.show()
+                                      val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
 
                                         sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
         }
@@ -47,15 +49,16 @@ def main(args: Array[String]): Unit = {
         val sc = new SparkContext(conf)
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     import sqlContext.implicits._
-    val dfProc = sqlContext.sql("select * from antuit_stage.data3")
-    val dfFresh = sqlContext.sql("select * from antuit_stage.data4")
-    val res = addDeltaIncremental(dfProc, dfFresh)
+    val dfProc = sqlContext.sql("select * from antuit_stage."+args(0))
+    val dfFresh = sqlContext.sql("select * from antuit_stage."+args(1))
+    val res = addDeltaIncremental(dfProc, dfFresh )
     res.show()
     res.registerTempTable("mytempTable")
-        sqlContext.sql("drop table if exists antuit_stage.data3")
-        sqlContext.sql(" create table antuit_stage.data3 as select * from mytempTable")
+        sqlContext.sql("drop table if exists antuit_stage.t_order_p2")
+        sqlContext.sql(" create table antuit_stage.t_order_p2 as select * from mytempTable")
 
 
     }
 
 }
+
