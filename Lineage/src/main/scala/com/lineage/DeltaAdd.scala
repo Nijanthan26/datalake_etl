@@ -31,7 +31,7 @@ object DeltaAdd {
 
 
     def main(args: Array[String]): Unit = {
-        val conf = new SparkConf().setAppName("test").setMaster("local")
+        val conf = new SparkConf().setAppName("test")//.setMaster("local")
         val sc = new SparkContext(conf)
         val sqlContext = new org.apache.spark.sql.SQLContext(sc)
         import sqlContext.implicits._
@@ -40,8 +40,10 @@ object DeltaAdd {
         val res = addDeltaIncremental(dfProc, dfDelta )
        // res.show()
         res.registerTempTable("mytempTable")
+        res.show()
         sqlContext.sql("drop table if exists antuit_stage."+args(0)) //Drop the Previously Processes table  from Data Lake
-        sqlContext.sql(" create table antuit_stage."+args(0)+" as select * from mytempTable") //Create a refreshed processed table in data lake
+        
+       // sqlContext.sql(" create table antuit_stage."+args(0)+" as select * from mytempTable") //Create a refreshed processed table in data lake
       //  sqlContext.sql("drop table if exists antuit_stage."+args(0)) //Drop the Previously Processes table  from Data Lake
        // sqlContext.sql(" create table antuit_stage."+args(0)+"as select * from antuit_stage."+args(0)+"_merge") //Create a refreshed processed table in data lake
         
