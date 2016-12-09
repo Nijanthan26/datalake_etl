@@ -12,36 +12,36 @@ import scala.reflect.runtime.universe
 import org.apache.spark.SparkContext
 
 object FirstDump {
-  
+/*
+ * To add md5 and sequence numbers to archive data and the latest data present in impala and dump the combined data in data lake.
+ * This is one time run. 
+ * */
   def addDeltaFirstTime(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-                            val sparkSession = deltaDf.sparkSession
-                                        val initialDfSha = addHash(initialDf.drop("seq"))
-                                        val deltaDfSha = addHash(deltaDf)
-
-                                        val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.
-                                        reduceByKey((r1, r2) => r1).
-                                        map { case(sha2, row) => row }
-
-                                        val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema)
-                                        dedupedDf.createOrReplaceTempView("deduped")
-                                        import org.apache.spark.sql.functions._
-                                        dedupedDf.withColumn("sequence", monotonically_increasing_id)
-        }
-		
-def main(args: Array[String]): Unit = {
-        val conf = new SparkConf().setAppName("test").setMaster("local")
-        val sc = new SparkContext(conf)
-    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-    import sqlContext.implicits._
-    val df1 = sqlContext.sql("select * from antuit_stage."+args(0))
-    val df2 = sqlContext.sql("select * from antuit_stage."+args(1))
-    val res = addDeltaFirstTime(df1, df2)
-    res.show()
-    res.registerTempTable("mytempTable")
-    sqlContext.sql("drop table if exists antuit_stage.t_order_p")
-    sqlContext.sql("create table antuit_stage.t_order_p as select * from mytempTable");
-
-
+      val sparkSession = deltaDf.sparkSession
+      val initialDfSha = addHash(initialDf)//.drop("archive_date")) // add hash to archive data
+      val deltaDfSha = addHash(deltaDf) // add hash to data from imapala
+      val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
+      val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema)
+      dedupedDf.createOrReplaceTempView("deduped")
+      import org.apache.spark.sql.functions._
+      dedupedDf.withColumn("sequence", monotonically_increasing_id)
     }
+		
+  
+  def main(args: Array[String]): Unit = {
+      val conf = new SparkConf().setAppName("test").setMaster("local")
+      val sc = new SparkContext(conf)
+      val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+      import sqlContext.implicits._
+      val archData = sqlContext.sql("select * from antuit_stage."+args(0)) // Load archive data
+      val LatestData = sqlContext.sql("select * from antuit_stage."+args(1)) // Load latest data from impala
+      val res = addDeltaFirstTime(archData, LatestData)
+      //res.show()
+      res.registerTempTable("mytempTable")
+      sqlContext.sql("drop table if exists antuit_stage.t_order_p")
+      sqlContext.sql("create table antuit_stage.t_order_p as select * from mytempTable");
+  
+  
+      }
   
 }
