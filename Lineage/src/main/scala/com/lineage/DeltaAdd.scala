@@ -10,7 +10,7 @@ import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import org.apache.spark.SparkContext
 
-object lineageDelta {
+object DeltaAdd {
   /*To add the MD5 and sequence number to delta data and to perform update merge
    * */
    def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDfWithDate: Dataset[Row]): Dataset[Row] = {
