@@ -31,7 +31,7 @@ object DeltaAdd {
 
 
     def main(args: Array[String]): Unit = {
-        val conf = new SparkConf().setAppName("test")
+        val conf = new SparkConf().setAppName("DeltaAdd")
         val sc = new SparkContext(conf)
         val sqlContext = new org.apache.spark.sql.SQLContext(sc)
         import sqlContext.implicits._
