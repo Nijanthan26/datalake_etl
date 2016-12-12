@@ -7,7 +7,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
-object md5Hash {
+object RowHash {
   	def addHash(deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val sparkSession = deltaDf.sparkSession
 					sparkSession.udf.register("sha2m", (r: Row) => {

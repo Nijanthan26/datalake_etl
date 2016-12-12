@@ -1,5 +1,5 @@
 package com.lineage
-import com.lineage.md5Hash.addHash
+import com.lineage.RowHash
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
@@ -17,7 +17,7 @@ object DeltaAdd {
         val initialDfSha = initialDfShaWithDate//.drop("archive_date") still in discussion
         val deltaDf = deltaDfWithDate//.drop("archive_date");
         val sparkSession = deltaDf.sparkSession
-        val deltaDfSha = addHash(deltaDf)
+        val deltaDfSha = RowHash.addHash(deltaDf)
 
         initialDfSha.createOrReplaceTempView("initialDfSha")
         val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
@@ -38,12 +38,13 @@ object DeltaAdd {
         val dfProc = sqlContext.sql("select * from antuit_stage."+args(0)) //load the Previously Processes table  from Data Lake
         val dfDelta = sqlContext.sql("select * from antuit_stage."+args(1)) // Load the delta data from Impala
         val res = addDeltaIncremental(dfProc, dfDelta )
-       // res.show()
+        //res.write.format("parquet")
+        // res.show()
         res.registerTempTable("mytempTable")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge") //Drop the old Merge table  
-        sqlContext.sql(" create table antuit_stage."+args(0)+"_merge as select * from mytempTable") //Create a new merge table
+        sqlContext.sql("create table antuit_stage."+args(0)+"_merge as select * from mytempTable") //Create a new merge table
         sqlContext.sql("drop table if exists antuit_stage."+args(0)) //Drop the Previously Processes table  from Data Lake
-        sqlContext.sql(" create table antuit_stage."+args(0)+" as select * from antuit_stage."+args(0)+"_merge") //Create a refreshed processed table in data lake
+        sqlContext.sql("create table antuit_stage."+args(0)+" as select * from antuit_stage."+args(0)+"_merge") //Create a refreshed processed table in data lake
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
     
       }
