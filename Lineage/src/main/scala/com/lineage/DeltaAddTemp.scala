@@ -43,12 +43,12 @@ object DeltaAddTemp {
         val Month1 =cal.get(Calendar.MONTH )
         val Month = Month1+1
 
-        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/testTable/"+Date+"_"+Month)
+        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month)
         sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
         sqlContext.sql("drop table if exists antuit_stage."+args(0))
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
         println("--------------------------------------------------------------------------------------------------------------")
-        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/testTable/"+Date+"_"+Month+"\'")
+        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month+"\'")
         println("--------------------------------------------------------------------------------------------------------------")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
       }
