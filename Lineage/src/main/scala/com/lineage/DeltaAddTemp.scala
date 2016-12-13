@@ -37,7 +37,12 @@ object DeltaAddTemp {
         val dfDelta = sqlContext.sql("select * from antuit_stage."+args(1)) // Load the delta data from Impala
         val res = addDeltaIncremental(dfProc, dfDelta )
 
-        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/testTable/"+java.time.LocalDate.now)
+        val cal = Calendar.getInstance()
+        val Date =cal.get(Calendar.DATE )
+        val Month1 =cal.get(Calendar.MONTH )
+        val Month = Month1+1
+
+        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/testTable/"+Date+"_"+Month)
        // sqlContext.sql("drop table if exists antuit_stage."+args(0))
         
       }
