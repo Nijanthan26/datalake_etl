@@ -38,7 +38,7 @@ object DeltaAddTemp {
         val res = addDeltaIncremental(dfProc, dfDelta )
         //res.write.format("parquet")
         // res.show()
-        res.write.format("com.databricks.spark.csv").option("header", "false").save("/antuit/databases/antuit_stage/testTable/12_13")
+        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/testTable/12_13")
     
       }
 }
