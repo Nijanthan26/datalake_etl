@@ -47,7 +47,7 @@ object DeltaAddTemp {
         sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
         sqlContext.sql("drop table if exists antuit_stage."+args(0))
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
-        sqlContext.sql("ALTER TABLE "+ args(0) +" location \'/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month+"\'")
+        sqlContext.sql("ALTER TABLE "+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month+"\'")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
       }
 }
