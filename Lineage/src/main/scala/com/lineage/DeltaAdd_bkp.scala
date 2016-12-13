@@ -8,11 +8,12 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
-import java.util.Calendar
 import org.apache.spark.SparkContext
-object DeltaAddTemp {
-  
-    def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDfWithDate: Dataset[Row]): Dataset[Row] = {
+
+object DeltaAdd_bkp {
+  /*To add the MD5 and sequence number to delta data and to perform update merge
+   * */
+   def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDfWithDate: Dataset[Row]): Dataset[Row] = {
         val initialDfSha = initialDfShaWithDate//.drop("archive_date") still in discussion
         val deltaDf = deltaDfWithDate//.drop("archive_date");
         val sparkSession = deltaDf.sparkSession
@@ -37,19 +38,14 @@ object DeltaAddTemp {
         val dfProc = sqlContext.sql("select * from antuit_stage."+args(0)) //load the Previously Processes table  from Data Lake
         val dfDelta = sqlContext.sql("select * from antuit_stage."+args(1)) // Load the delta data from Impala
         val res = addDeltaIncremental(dfProc, dfDelta )
-
-        val cal = Calendar.getInstance()
-        val Date =cal.get(Calendar.DATE )
-        val Month1 =cal.get(Calendar.MONTH )
-        val Month = Month1+1
-
-        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month)
-        sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
-        sqlContext.sql("drop table if exists antuit_stage."+args(0))
-        sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
-        println("--------------------------------------------------------------------------------------------------------------")
-        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month+"\'")
-        println("--------------------------------------------------------------------------------------------------------------")
+        //res.write.format("parquet")
+        // res.show()
+        res.registerTempTable("mytempTable")
+        sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge") //Drop the old Merge table  
+        sqlContext.sql("create table antuit_stage."+args(0)+"_merge as select * from mytempTable") //Create a new merge table
+        sqlContext.sql("drop table if exists antuit_stage."+args(0)) //Drop the Previously Processes table  from Data Lake
+        sqlContext.sql("create table antuit_stage."+args(0)+" as select * from antuit_stage."+args(0)+"_merge") //Create a refreshed processed table in data lake
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
+    
       }
 }
