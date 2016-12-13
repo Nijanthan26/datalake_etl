@@ -36,9 +36,9 @@ object DeltaAddTemp {
         val dfProc = sqlContext.sql("select * from antuit_stage."+args(0)) //load the Previously Processes table  from Data Lake
         val dfDelta = sqlContext.sql("select * from antuit_stage."+args(1)) // Load the delta data from Impala
         val res = addDeltaIncremental(dfProc, dfDelta )
-        //res.write.format("parquet")
-        // res.show()
-        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/testTable/12_13")
-    
+
+        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/testTable/"+java.time.LocalDate.now)
+       // sqlContext.sql("drop table if exists antuit_stage."+args(0))
+        
       }
 }
