@@ -18,7 +18,7 @@ object FirstDump {
  * */
   def addDeltaFirstTime(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
       val sparkSession = deltaDf.sparkSession
-      val initialDfSha = RowHash.addHash(initialDf)//.drop("archive_date")) // add hash to archive data
+      val initialDfSha = RowHash.addHash(initialDf.drop("archive_date")) // add hash to archive data
       val deltaDfSha = RowHash.addHash(deltaDf) // add hash to data from imapala
       val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
       val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema)
