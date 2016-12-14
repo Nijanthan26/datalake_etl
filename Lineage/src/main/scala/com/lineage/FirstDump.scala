@@ -33,13 +33,13 @@ object FirstDump {
       val sc = new SparkContext(conf)
       val sqlContext = new org.apache.spark.sql.SQLContext(sc)
       import sqlContext.implicits._
-      val archData = sqlContext.sql("select * from antuit_stage."+args(0)) // Load archive data
-      val LatestData = sqlContext.sql("select * from antuit_stage."+args(1)) // Load latest data from impala
+      val archData = sqlContext.sql("select * from staging."+args(0)) // Load archive data
+      val LatestData = sqlContext.sql("select * from staging."+args(1)) // Load latest data from impala
       val res = addDeltaFirstTime(archData, LatestData)
       //res.show()
       res.registerTempTable("mytempTable")
-      sqlContext.sql("drop table if exists antuit_stage.t_order_p11")
-      sqlContext.sql("create table antuit_stage.t_order_p11 as select * from mytempTable");
+      sqlContext.sql("drop table if exists antuit_stage."+args(2))
+      sqlContext.sql("create table antuit_stage."+args(2)+" as select * from mytempTable");
   
   
       }
