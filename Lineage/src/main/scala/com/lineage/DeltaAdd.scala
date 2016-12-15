@@ -13,8 +13,8 @@ import org.apache.spark.SparkContext
 object DeltaAdd {
   
 def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-			    val initialDfSha = initialDfShaWithDate//.drop("archive_date")
-					val sparkSession = deltaDf.sparkSession
+			    val initialDfSha = initialDfShaWithDate.drop("archive_date")
+					val sparkSession = deltaDf.sparkSession.drop("archive_date")
 					val deltaDfSha = RowHash.addHash(deltaDf)
 					initialDfSha.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
@@ -34,7 +34,6 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val dfProc = sqlContext.sql("select * from antuit_stage."+args(0)) //load the Previously Processes table  from Data Lake
         val dfDelta = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load the delta data from Impala
         val res = addDeltaIncremental(dfProc, dfDelta )
-
         val cal = Calendar.getInstance()
         val Date =cal.get(Calendar.DATE )
         val Month1 =cal.get(Calendar.MONTH )
