@@ -12,20 +12,18 @@ import java.util.Calendar
 import org.apache.spark.SparkContext
 object DeltaAdd {
   
-    def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDfWithDate: Dataset[Row]): Dataset[Row] = {
-        val initialDfSha = initialDfShaWithDate//.drop("archive_date") still in discussion
-        val deltaDf = deltaDfWithDate
-        val sparkSession = deltaDf.sparkSession
-        val deltaDfSha = RowHash.addHash(deltaDf)
-        initialDfSha.createOrReplaceTempView("initialDfSha")
-        val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
-        deltaDfSha.createOrReplaceTempView("deltaDfSha")
-        import org.apache.spark.sql.functions._
-        val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
-        //deltaDfShaSeq.show()
-        val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
-        sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
-        }
+def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
+			    val initialDfSha = initialDfShaWithDate//.drop("archive_date")
+					val sparkSession = deltaDf.sparkSession
+					val deltaDfSha = addHash(deltaDf)
+					initialDfSha.createOrReplaceTempView("initialDfSha")
+					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
+					deltaDfSha.createOrReplaceTempView("deltaDfSha")
+					import org.apache.spark.sql.functions._ 
+					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
+					val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
+					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
+	}
 
 
     def main(args: Array[String]): Unit = {

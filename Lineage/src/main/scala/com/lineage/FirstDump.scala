@@ -16,16 +16,16 @@ object FirstDump {
  * To add md5 and sequence numbers to archive data and the latest data present in impala and dump the combined data in data lake.
  * This is one time run. 
  * */
-  def addDeltaFirstTime(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-      val sparkSession = deltaDf.sparkSession
-      val initialDfSha = RowHash.addHash(initialDf)//.drop("archive_date")) // add hash to archive data
-      val deltaDfSha = RowHash.addHash(deltaDf) // add hash to data from imapala
-      val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
-      val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema)
-      dedupedDf.createOrReplaceTempView("deduped")
-      import org.apache.spark.sql.functions._
-      dedupedDf.withColumn("sequence", monotonically_increasing_id)
-    }
+	def addDeltaFirstTime(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
+			    val sparkSession = deltaDf.sparkSession
+					val initialDfSha = addHash(initialDf)//.drop("archive_date"))
+					val deltaDfSha = addHash(deltaDf)
+					val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
+					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
+					dedupedDf.createOrReplaceTempView("deduped")
+					import org.apache.spark.sql.functions._ 
+					dedupedDf.withColumn("sequence", monotonically_increasing_id)
+	}
 		
   
   def main(args: Array[String]): Unit = {
