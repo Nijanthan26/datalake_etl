@@ -14,10 +14,10 @@ object DeltaAdd {
   
     def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDfWithDate: Dataset[Row]): Dataset[Row] = {
         val initialDfSha = initialDfShaWithDate//.drop("archive_date") still in discussion
-        val deltaDf1 = deltaDfWithDate.drop("md5");
-        val deltaDf = deltaDf1.drop("idx");
+        //val deltaDf1 = deltaDfWithDate.drop("md5");
+        //val deltaDf = deltaDf1.drop("idx");
         val sparkSession = deltaDf.sparkSession
-        val deltaDfSha = RowHash.addHash(deltaDf)
+        val deltaDfSha = RowHash.addHash(deltaDfWithDate)
 
         initialDfSha.createOrReplaceTempView("initialDfSha")
         val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
