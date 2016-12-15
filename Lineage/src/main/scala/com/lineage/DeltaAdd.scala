@@ -40,6 +40,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val Month = Month1+1
 
         res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month)
+        res.show()
         sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
         sqlContext.sql("drop table if exists antuit_stage."+args(0))
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
