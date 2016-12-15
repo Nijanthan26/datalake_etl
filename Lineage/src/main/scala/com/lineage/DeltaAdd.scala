@@ -50,5 +50,6 @@ object DeltaAdd {
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
         sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month+"\'")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
+        sc.close()
       }
 }
