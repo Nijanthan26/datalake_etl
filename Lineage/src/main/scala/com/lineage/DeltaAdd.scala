@@ -14,10 +14,10 @@ object DeltaAdd {
   
     def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDfWithDate: Dataset[Row]): Dataset[Row] = {
         val initialDfSha = initialDfShaWithDate//.drop("archive_date") still in discussion
-        //val deltaDf1 = deltaDfWithDate.drop("md5");
+        val deltaDf = deltaDfWithDate//.drop("md5");
         //val deltaDf = deltaDf1.drop("idx");
         val sparkSession = deltaDf.sparkSession
-        val deltaDfSha = RowHash.addHash(deltaDfWithDate)
+        val deltaDfSha = RowHash.addHash(deltaDf)
 
         initialDfSha.createOrReplaceTempView("initialDfSha")
         val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
@@ -50,6 +50,6 @@ object DeltaAdd {
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
         sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"/"+Date+"_"+Month+"\'")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
-        sc.close()
+        //sc.close()
       }
 }
