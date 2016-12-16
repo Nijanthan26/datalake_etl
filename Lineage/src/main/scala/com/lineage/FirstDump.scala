@@ -40,10 +40,10 @@ object FirstDump {
       val archData = sqlContext.sql("select * from staging."+args(0)) // Load archive data
       val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
       val res = addDeltaFirstTime(archData, LatestData)
-      res.show()
+      //res.show()
       res.registerTempTable("mytempTable")
       sqlContext.sql("drop table if exists antuit_stage.dl_"+args(2))
-      sqlContext.sql("create table antuit_stage.dl_"+args(2)+" as select * from mytempTable");
+      sqlContext.sql("create table antuit_stage."+args(2)+" as select * from mytempTable");
   
   
       }
