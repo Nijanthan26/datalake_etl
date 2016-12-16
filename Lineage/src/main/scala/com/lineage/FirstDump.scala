@@ -38,7 +38,7 @@ object FirstDump {
       val sqlContext = new org.apache.spark.sql.SQLContext(sc)
       import sqlContext.implicits._
       val archData = sqlContext.sql("select * from staging."+args(0)) // Load archive data
-      val LatestData = sqlContext.sql("select * from staging."+args(1)) // Load latest data from impala
+      val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
       val res = addDeltaFirstTime(archData, LatestData)
       res.show()
       res.registerTempTable("mytempTable")
