@@ -20,7 +20,7 @@ object FirstDump {
 			    val sparkSession = deltaDf.sparkSession
        
 			   // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
-			    val sortedDelta = deltaDf.select("archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date")))
+			    val sortedDelta = deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
           
           val initialDfSha = RowHash.addHash(initialDf)//.drop("archive_date"))
 					val deltaDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
