@@ -10,6 +10,8 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import org.apache.spark.SparkContext
+import sqlContext.implicits._
+import org.apache.spark.sql.functions._
 
 object FirstDump {
 /*
@@ -20,7 +22,7 @@ object FirstDump {
 			    val sparkSession = deltaDf.sparkSession
        if(!(deltaDf.columns.contains("archive_date")))
          {
-         deltaDf.withColumn("archive_date").fill("archive_date","null")
+         deltaDf.withColumn("archive_date" , lit("null"))
          }
 			    
 			   // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
