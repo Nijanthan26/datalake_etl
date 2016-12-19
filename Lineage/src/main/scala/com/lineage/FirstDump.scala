@@ -10,7 +10,6 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import org.apache.spark.SparkContext
-import sqlContext.implicits._
 import org.apache.spark.sql.functions._
 
 object FirstDump {

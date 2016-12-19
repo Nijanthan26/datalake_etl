@@ -10,6 +10,7 @@ import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.functions._
 object DeltaAdd {
   
 def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
@@ -17,7 +18,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					val sparkSession = deltaDf.sparkSession
 					if(!(deltaDf.columns.contains("archive_date")))
            {
-            deltaDf.withColumn("archive_date")
+            deltaDf.withColumn("archive_date",lit("null"))
             }
 			    val sortedinitialDf = initialDfShaWithDate.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
 					val sortedDelta = deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
