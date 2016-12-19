@@ -21,7 +21,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
            {
           val  delta = deltaDf.withColumn("archive_date",lit("null"))
            delta.show()
-			    val sortedinitialDf = initialDfShaWithDate.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
+			    val sortedinitialDf = initialDfShaWithDate.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*,"sha2m","sequence")
 					val sortedDelta = delta.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
 					val deltaDfSha = RowHash.addHash(sortedDelta)
 					
