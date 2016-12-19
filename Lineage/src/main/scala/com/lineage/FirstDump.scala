@@ -32,8 +32,9 @@ object FirstDump {
 					////initialDfSha.show()
 					//deltaDfSha.show()
 					val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
-					deduped.show()
+					
 					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
+					dedupedDf.show()
 					dedupedDf.createOrReplaceTempView("deduped")
 					import org.apache.spark.sql.functions._ 
 					dedupedDf.withColumn("sequence", monotonically_increasing_id) 
