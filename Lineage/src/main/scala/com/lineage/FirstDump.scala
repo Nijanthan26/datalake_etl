@@ -21,20 +21,35 @@ object FirstDump {
 			    val sparkSession = deltaDf.sparkSession
        if(!(deltaDf.columns.contains("archive_date")))
          {
-         deltaDf.withColumn("archive_date" ,lit(null))
-          
-         }
-			    deltaDf.show()
+        val delta =  deltaDf.withColumn("archive_date" ,lit(null))
+         delta.show()
 			   // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
-			    val sortedinitialDf = initialDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
-			    val sortedDelta =     deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
+			    val sortedinitialDf = initialDf.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
+			    val sortedDelta =     delta.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
           val initialDfSha = RowHash.addHash(initialDf)//.drop("archive_date"))
 					val deltaDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
 					val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
 					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
 					dedupedDf.createOrReplaceTempView("deduped")
 					import org.apache.spark.sql.functions._ 
-					dedupedDf.withColumn("sequence", monotonically_increasing_id)
+					dedupedDf.withColumn("sequence", monotonically_increasing_id) 
+         }
+       else
+       {
+         val delta =  deltaDf
+         delta.show()
+			   // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
+			    val sortedinitialDf = initialDf.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
+			    val sortedDelta =     delta.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
+          val initialDfSha = RowHash.addHash(initialDf)//.drop("archive_date"))
+					val deltaDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
+					val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
+					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
+					dedupedDf.createOrReplaceTempView("deduped")
+					import org.apache.spark.sql.functions._ 
+					dedupedDf.withColumn("sequence", monotonically_increasing_id) 
+       }
+			    
 	}
 		
   
