@@ -17,7 +17,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					val sparkSession = deltaDf.sparkSession
 					if(!(deltaDf.columns.contains("archive_date")))
            {
-            deltaDf.withColumn("archive_date", getNull())
+            deltaDf.withColumn("archive_date", lit(null: String))
             }
 			    val sortedinitialDf = initialDfShaWithDate.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
 					val sortedDelta = deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
