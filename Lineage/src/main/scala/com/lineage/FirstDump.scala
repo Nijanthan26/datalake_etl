@@ -18,12 +18,13 @@ object FirstDump {
  * */
 	def addDeltaFirstTime(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val sparkSession = deltaDf.sparkSession
-       if(!(has_column(deltaDf, "archive_date")))
-       {
+       if(!(deltaDf.columns.contains("archive_date")))
+         {
          deltaDf.withColumn("archive_date", getNull())
          }
 			   // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
-			    val sortedDelta = deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
+			    val sortedinitialDf = initialDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
+			    val sortedDelta =     deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
           val initialDfSha = RowHash.addHash(initialDf)//.drop("archive_date"))
 					val deltaDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
 					val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
