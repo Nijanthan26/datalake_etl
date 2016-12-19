@@ -23,6 +23,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					val sortedDelta = deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
 					val deltaDfSha = RowHash.addHash(sortedDelta)
 					
+					
 					sortedinitialDf.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.createOrReplaceTempView("deltaDfSha")
