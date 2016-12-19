@@ -16,12 +16,19 @@ object DeltaAdd {
 def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val initialDfSha = initialDfShaWithDate//.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
+					var delta = null
 					if(!(deltaDf.columns.contains("archive_date")))
            {
-            deltaDf.withColumn("archive_date",lit(null))
+           delta = deltaDf.withColumn("archive_date",lit(null))
             }
-			    val sortedinitialDf = initialDfShaWithDate.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
-					val sortedDelta = deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
+					else 
+					{
+					  delta = deltaDf
+					}
+			    
+			   // delta.show()
+			    val sortedinitialDf = initialDfShaWithDate.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
+					val sortedDelta = deltaDf.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
 					val deltaDfSha = RowHash.addHash(sortedDelta)
 					
 					
