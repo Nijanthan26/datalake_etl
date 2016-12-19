@@ -29,9 +29,10 @@ object FirstDump {
 			    
           val initialDfSha = RowHash.addHash(sortedinitialDf)//.drop("archive_date"))
 					val deltaDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
-					initialDfSha.show()
-					deltaDfSha.show()
+					////initialDfSha.show()
+					//deltaDfSha.show()
 					val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
+					deduped.show()
 					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
 					dedupedDf.createOrReplaceTempView("deduped")
 					import org.apache.spark.sql.functions._ 
