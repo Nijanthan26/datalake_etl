@@ -63,7 +63,7 @@ object FirstDump {
       val res = addDeltaFirstTime(archData, LatestData)
       //res.show()
       res.registerTempTable("mytempTable")
-      sqlContext.sql("drop table if exists antuit_stage.dl_"+args(2))
+      sqlContext.sql("drop table if exists antuit_stage."+args(2))
       sqlContext.sql("create table antuit_stage."+args(2)+" as select * from mytempTable");
   
   
