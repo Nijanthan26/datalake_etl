@@ -21,7 +21,7 @@ object FirstDump {
 			    val sparkSession = deltaDf.sparkSession
        if(!(deltaDf.columns.contains("archive_date")))
          {
-        val delta =  deltaDf.withColumn("archive_date" ,lit("").toString())
+        val delta =  deltaDf.withColumn("archive_date" ,lit("").toString)
         // delta.show()
 			   // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
 			    val sortedinitialDf = initialDf.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
