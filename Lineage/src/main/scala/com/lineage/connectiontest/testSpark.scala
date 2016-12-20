@@ -21,9 +21,9 @@ object testSpark {
       val data = sparkSession.createDataset(Seq((1,2, "date"), (3,4, "date2"),(3,4, "date3"),(3,4, "date5"))).toDF("col1", "col2", "archive_date")
       data.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/testwrite1")
         
-     val data2 = sparkSession.createDataset(Seq((1,2, "date"), (3,4, "date2"),(3,4, "date3"),(3,4, "date5"))).toDF("col1", "col2", "archive_date")
+      val data2 = sparkSession.createDataset(Seq((1,2, "date"), (3,4, "date2"),(3,4, "date3"),(3,4, "date5"))).toDF("col1", "col2", "archive_date")
       data2.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("hdfs://nameservice1/antuit/databases/testwrite2")
-      
+  }
   
       }
 }
