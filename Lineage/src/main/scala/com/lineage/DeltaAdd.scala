@@ -19,7 +19,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					
 					if(!(deltaDf.columns.contains("archive_date")))
            {
-          val  delta = deltaDf.withColumn("archive_date",lit(null: String))
+          val  delta = deltaDf.withColumn("archive_date",lit(0: String))
           delta.show()
            
           val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
