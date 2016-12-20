@@ -24,7 +24,7 @@ object FirstDump {
          
          
         
-        val delta =  deltaDf.withColumn("archive_date",lit())
+        val delta =  deltaDf.withColumn("archive_date",lit(null: String))
         // delta.show()
 			   // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
 			    val sortedinitialDf = initialDf.select("archive_date" , delta.columns.filter(x => !x.equals("archive_date")):_*)
