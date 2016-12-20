@@ -14,6 +14,7 @@ import org.apache.spark.sql.functions._
 
 object testSpark {
   def main(args: Array[String]): Unit = {
+    
       val conf = new SparkConf().setAppName("FirstDump")
       val sc = new SparkContext(conf)
       val sparkSession = SparkSession.builder().appName("test").getOrCreate()
@@ -25,5 +26,5 @@ object testSpark {
       data2.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("hdfs://nameservice1/antuit/databases/testwrite2")
   }
   
-      }
+      
 }
