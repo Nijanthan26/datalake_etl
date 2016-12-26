@@ -1,0 +1,256 @@
+hj_t_bmm_event_log
+
+ sqoop job --create hj_t_bmm_event_log -- import  --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+ --direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by event_log_id \
+ --table t_bmm_event_log  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_event_log
+ 
+
+ 
+ 
+t_bmm_charge_event_ref
+
+    sqoop job --create hj_t_bmm_charge_event_ref -- import  --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+    --direct  \
+	--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by charge_event_id \
+ --table t_bmm_charge_event_ref  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_charge_event_ref
+ 
+
+ 
+t_bmm_invoice_type
+
+    sqoop job --create hj_t_bmm_invoice_type -- import  --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+    --direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by invoice_type_id \
+ --table t_bmm_invoice_type  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_invoice_type
+ 
+ 
+t_bmm_customer_control
+
+    sqoop job --create hj_t_bmm_customer_control -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+ --direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by customer_id \
+ --table t_bmm_customer_control  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_customer_control
+ 
+t_bmm_chargeback_type
+
+    sqoop job --create hj_t_bmm_chargeback_type -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+ --direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by chargeback_type_id \
+ --table t_bmm_chargeback_type  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_chargeback_type
+ 
+t_bmm_gl_code
+
+    sqoop job --create hj_t_bmm_gl_code -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+	--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by gl_code_id \
+ --table t_bmm_gl_code  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_gl_code
+ 
+t_bmm_param_uom_anniversary
+
+    sqoop job --create hj_t_bmm_param_uom_anniversary -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+ --direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by parameter_id \
+ --table t_bmm_param_uom_anniversary  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_param_uom_anniversary
+ 
+t_bmm_uom_anniv_incept
+    sqoop job --create hj_t_bmm_uom_anniv_incept -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+ --direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by uom_anniv_incept_id \
+ --table t_bmm_uom_anniv_incept  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_uom_anniv_incept
+ 
+t_bmm_uom_anniv_incept_detail
+
+    sqoop job --create hj_t_bmm_uom_anniv_incept_detail -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+	--direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by uom_anniv_incept_detail_id \
+ --table t_bmm_uom_anniv_incept_detail  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_uom_anniv_incept_detail
+
+ t_bmm_param_manual_csr_prompt
+ 
+     sqoop job --create hj_t_bmm_param_manual_csr_prompt -- import  --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+	 --direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by parameter_id \
+ --table t_bmm_param_manual_csr_prompt  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_param_manual_csr_prompt
+
+ t_bmm_param_manual_prompt
+    sqoop job --create hj_t_bmm_param_manual_prompt -- import  --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by parameter_id \
+ --table t_bmm_param_manual_prompt  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_param_manual_prompt
+ 
+ t_bmm_param_recurring
+ 
+   sqoop job --create hj_t_bmm_param_recurring -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+ --driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+  --fields-terminated-by ' \001' \
+  --split-by parameter_id \
+ --table t_bmm_param_recurring  \
+ --delete-target-dir \
+ --target-dir /antuit/sqoopdest/hj_t_bmm_param_recurring
+ 
+t_bmm_param_uom_storage
+
+sqoop job --create hj_t_bmm_param_uom_storage -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by parameter_id \
+--table t_bmm_param_uom_storage  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_param_uom_storage
+ 
+ 
+t_bmm_param_wms_event
+
+sqoop job --create hj_t_bmm_param_wms_event -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by parameter_id \
+--table t_bmm_param_wms_event  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_param_wms_event
+
+
+
+hj_t_bmm_revenue_code
+
+sqoop job --create hj_t_bmm_revenue_code -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by revenue_code_id  \
+--table t_bmm_revenue_code  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_revenue_code
+
+
+hj_t_bmm_chargeback_code
+
+sqoop job --create hj_t_bmm_chargeback_code -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by chargeback_code \
+--table t_bmm_chargeback_code  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_chargeback_code
+
+
+hj_t_bmm_chargeback_transaction
+
+sqoop job --create hj_t_bmm_chargeback_transaction -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver  \
+--fields-terminated-by ' \001'  \
+--split-by chargeback_tran_id  \
+--table t_bmm_chargeback_transaction  \
+--delete-target-dir  \
+--target-dir /antuit/sqoopdest/hj_t_bmm_chargeback_transaction
+
+hj_t_bmm_frequency
+
+
+sqoop job --create hj_t_bmm_frequency -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by frequency_id \
+--table t_bmm_frequency  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_frequency
+
+
+
+hj_t_bmm_frequency_date
+
+sqoop job --create hj_t_bmm_frequency_date -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by frequency_date_id \
+--table t_bmm_frequency_date  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_frequency_date
+
+
+hj_t_bmm_frequency_dom
+
+sqoop job --create hj_t_bmm_frequency_dom -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by parameter_id \
+--table frequency_dom_id  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_frequency_dom
+
+hj_t_bmm_frequency_dow
+
+sqoop job --create hj_t_bmm_frequency_dow -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by frequency_dow_id \
+--table t_bmm_frequency_dow  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_frequency_dow
+
+
+hj_t_bmm_contract_note
+
+sqoop job --create hj_t_bmm_contract_note -- import --connect "jdbc:sqlserver://192.168.100.223:1433;database=AAD"  \
+--direct  \
+--driver com.microsoft.sqlserver.jdbc.SQLServerDriver \
+--fields-terminated-by ' \001' \
+--split-by contract_note_id \
+--table t_bmm_contract_note  \
+--delete-target-dir \
+--target-dir /antuit/sqoopdest/hj_t_bmm_contract_note
+
