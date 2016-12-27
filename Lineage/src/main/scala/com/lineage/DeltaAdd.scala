@@ -17,37 +17,12 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 			    val initialDfSha = initialDfShaWithDate//.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
 					
-					if(!(deltaDf.columns.contains("archive_date")))
-           {
-          val  delta = deltaDf.withColumn("archive_date",lit("delta"))
-          delta.show()
-           
-          val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
-          val sortedDelta = delta.select("archive_date" , commonColList:_*)
-          
-          val iniColList = "sha2" +: "sequence" +: commonColList
-			    val sortedinitialDf = initialDfShaWithDate.select("archive_date" , iniColList:_*)
-					
-					val deltaDfSha = RowHash.addHash(sortedDelta)
-					
-					sortedinitialDf.createOrReplaceTempView("initialDfSha")
-					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
-					deltaDfSha.createOrReplaceTempView("deltaDfSha")
-					import org.apache.spark.sql.functions._ 
-					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
-					val deduped = sortedinitialDf.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
-					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
-          
-           }
-					else 
-					{
+				
 					val  delta = deltaDf
 					delta.show()
 			    val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
           val sortedDelta = delta.select("archive_date" , commonColList:_*)
-        
-					val deltaDfSha = RowHash.addHash(sortedDelta)
-					
+        	val deltaDfSha = RowHash.addHash(sortedDelta)
 					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.createOrReplaceTempView("deltaDfSha")
@@ -55,9 +30,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
 					val deduped = initialDfShaWithDate.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
 					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
-					}
-			    
-
+					    
 	}
 
 
