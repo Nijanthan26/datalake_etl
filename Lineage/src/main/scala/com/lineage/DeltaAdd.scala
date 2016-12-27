@@ -19,7 +19,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					
 				
 					val  delta = deltaDf
-					delta.show()
+					//delta.show()
 			    val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
           val sortedDelta = delta.select("archive_date" , commonColList:_*)
         	val deltaDfSha = RowHash.addHash(sortedDelta)
@@ -46,13 +46,16 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val Date =cal.get(Calendar.DATE )
         val Month1 =cal.get(Calendar.MONTH )
         val Month = Month1+1
+        val Hour = cal.get(Calendar.HOUR_OF_DAY)
+        val min = cal.get(Calendar.MINUTE)
 
+        
         res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month)
         //res.show()
         sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
         sqlContext.sql("drop table if exists antuit_stage."+args(0))
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
-        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"\'")
+        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"\'")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
         //sc.close()
       }
