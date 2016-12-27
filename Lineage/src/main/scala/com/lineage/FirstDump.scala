@@ -45,7 +45,7 @@ object FirstDump {
           {
          args(2) = args(1)
           }
-      val archData = sqlContext.sql("select * from staging."+args(2)) // Load archive data
+      val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
       val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
       val res = addDeltaFirstTime(archData, LatestData)
       //res.show()
