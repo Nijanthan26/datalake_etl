@@ -11,18 +11,15 @@ import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
-object DeltaAdd {
+
+object mrsDeltaAdd {
   
 def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val initialDfSha = initialDfShaWithDate//.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
 					
-				
 					val  delta = deltaDf
-					//delta.show()
-			    val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
-          val sortedDelta = delta.select("archive_date" , commonColList:_*)
-        	val deltaDfSha = RowHash.addHash(sortedDelta)
+        	val deltaDfSha = RowHash.addHash(delta)
 					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.createOrReplaceTempView("deltaDfSha")

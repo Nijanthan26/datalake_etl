@@ -12,7 +12,7 @@ import scala.reflect.runtime.universe
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 
-object FirstDump {
+object hjFirstDump {
 /*
  * To add md5 and sequence numbers to archive data and the latest data present in impala and dump the combined data in data lake.
  * This is one time run. 
