@@ -43,8 +43,8 @@ object FirstDump {
 			    val sortedDelta =     deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
          // val initialDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
 					val deltaDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
-					//val deduped = initialDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
-					val dedupedDf = sparkSession.createDataFrame(deltaDfSha, deltaDfSha.schema) 
+					val deduped = deltaDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
+					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
 					dedupedDf.createOrReplaceTempView("deduped")
 					import org.apache.spark.sql.functions._ 
 					dedupedDf.withColumn("sequence", monotonically_increasing_id) 
