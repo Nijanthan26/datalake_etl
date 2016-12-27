@@ -37,8 +37,6 @@ object FirstDump {
 	
 		def addDeltaFirstTimeNoArc(deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val sparkSession = deltaDf.sparkSession
-            
-             
           // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
 			    val sortedDelta =     deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
          // val initialDfSha = RowHash.addHash(sortedDelta)//.drop("archive_date"))
