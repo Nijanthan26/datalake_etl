@@ -11,20 +11,20 @@ import com.microsoft.sqlserver.jdbc.SQLServerDriver
 object importtable {
   
   def main(args: Array[String]) {
-   //val  tablename= args(0)
-   val conf = new SparkConf().setAppName("Load Data from DB")
+   val  tablename= args(0)
+   val conf = new SparkConf().setAppName("Import")
    val sc = new SparkContext(conf)
    val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
 
 val dataframe_db = sqlcontext.read.format("jdbc").
 option("url", "jdbc:sqlserver://192.168.100.223:1433;databaseName=AAD").
 option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver").
-option("dbtable", "t_bmm_customer").
+option("dbtable", tablename).
 option("user", "readonly").
 option("password", "HJ#ric1!").load()
 
 
-dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit_stage/"+args(0))
+dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sqoopdest/"+tablename)
 
 
 }
