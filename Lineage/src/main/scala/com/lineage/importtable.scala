@@ -6,10 +6,6 @@ import org.apache.spark.sql._
 
 object importtable {
   
-}
-
-
-
   def main(args: Array[String]) {
    val  tablename= args(0)
    val conf = new SparkConf().setAppName("Load Data from DB")
