@@ -16,7 +16,7 @@ object importtable {
    val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
 
 val dataframe_db = sqlcontext.read.format("jdbc").
-option("url", "jdbc:sqlserver://192.168.100.223:1433/database=AAD").
+option("url", "jdbc:sqlserver://192.168.100.223:1433?database=AAD").
 option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver").
 option("dbtable", "t_bmm_customer").
 option("user", "readonly").
