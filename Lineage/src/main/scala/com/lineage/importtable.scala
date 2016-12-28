@@ -12,7 +12,7 @@ object importtable {
 
   def main(args: Array[String]) {
    val  tablename= args(0)
-   val conf = new SparkConf().setAppName(“Load Data from DB")
+   val conf = new SparkConf().setAppName("Load Data from DB")
    val sc = new SparkContext(conf)
 
 val dataframe_db = spark.read.format("jdbc").option("url", "jdbc:sqlserver://192.168.100.223:1433;database=AAD").option("dbtable", "t_bmm_event_log").option("user", "readonly").option("password", "HJ#ric1!").load()
