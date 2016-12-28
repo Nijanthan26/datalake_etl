@@ -26,7 +26,7 @@ option("password", "HJ#ric1!").load()
 
 
 
-dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit_stage/hj_bmm_event_log1")
+dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit_stage/"+args(0))
 
 
 }
