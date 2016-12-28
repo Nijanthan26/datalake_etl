@@ -24,7 +24,7 @@ option("user", "readonly").
 option("password", "HJ#ric1!").load()
 
 
-dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sqoopdest/"+tablename)
+dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sqoopdest/hj_"+tablename)
 
 
 }
