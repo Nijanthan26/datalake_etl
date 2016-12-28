@@ -10,7 +10,7 @@ import org.apache.spark.sql.SQLContext
 object importtable {
   
   def main(args: Array[String]) {
-   val  tablename= args(0)
+   //val  tablename= args(0)
    val conf = new SparkConf().setAppName("Load Data from DB")
    val sc = new SparkContext(conf)
    val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
