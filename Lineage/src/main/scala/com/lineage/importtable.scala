@@ -17,10 +17,15 @@ object importtable {
 
 val dataframe_db = sqlcontext.read.format("jdbc").
 option("url", "jdbc:sqlserver://192.168.100.223:1433/database=AAD").
-option("driver", "com.mysql.jdbc.Driver").
+option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver").
 option("dbtable", "t_bmm_customer").
 option("user", "readonly").
 option("password", "HJ#ric1!").load()
+
+
+
+
+
 dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit_stage/hj_bmm_event_log")
 
 
