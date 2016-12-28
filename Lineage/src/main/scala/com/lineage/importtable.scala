@@ -4,6 +4,7 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import org.apache.spark.sql._
 import org.apache.spark.sql.SQLContext
+import com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 
 
