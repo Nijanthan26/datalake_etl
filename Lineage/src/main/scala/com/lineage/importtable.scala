@@ -16,3 +16,4 @@ dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit_stage/
 
 
 }
+}
