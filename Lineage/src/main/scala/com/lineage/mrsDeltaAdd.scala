@@ -47,12 +47,12 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val min = cal.get(Calendar.MINUTE)
 
         
-        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month)
+        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
         //res.show()
         sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
         sqlContext.sql("drop table if exists antuit_stage."+args(0))
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
-        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"\'")
+        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
         //sc.close()
       }
