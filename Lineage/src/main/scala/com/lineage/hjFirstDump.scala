@@ -56,7 +56,7 @@ object hjFirstDump {
       val sc = new SparkContext(conf)
       val sqlContext = new org.apache.spark.sql.SQLContext(sc)
       import sqlContext.implicits._
-      if(args(2).equals("_"))
+      if(args.length < 2)
       {
       //val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
       val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
