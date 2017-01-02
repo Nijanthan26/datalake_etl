@@ -19,13 +19,10 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					
 				
 					val  delta = deltaDf
-					//delta.show()
-			    val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
+					val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
           val sortedDelta = delta.select("archive_date" , commonColList:_*)
           val deltaDfSha = RowHash.addHash(sortedDelta)
-        	deltaDfSha.show()
-        	initialDfSha.show()
-					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
+        	initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.createOrReplaceTempView("deltaDfSha")
 					import org.apache.spark.sql.functions._ 
@@ -52,7 +49,6 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val min = cal.get(Calendar.MINUTE)
         val second = cal.get(Calendar.SECOND)
 
-        res.show()
         res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
 
         sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
