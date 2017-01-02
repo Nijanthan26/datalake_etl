@@ -45,7 +45,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val Month = Month1+1
         val Hour = cal.get(Calendar.HOUR_OF_DAY)
         val min = cal.get(Calendar.MINUTE)
-
+        val second = cal.get(Calendar.SECOND)
         
         res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
         //res.show()

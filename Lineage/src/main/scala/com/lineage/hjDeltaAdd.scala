@@ -31,7 +31,6 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					import org.apache.spark.sql.functions._ 
 					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
 					val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
-					deduped.show()
 					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
 					    
 	}
@@ -53,7 +52,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val min = cal.get(Calendar.MINUTE)
         val second = cal.get(Calendar.SECOND)
 
-        
+        res.show()
         res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
 
         sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
