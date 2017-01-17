@@ -37,7 +37,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         val sqlContext = new org.apache.spark.sql.SQLContext(sc)
         import sqlContext.implicits._
         val dfProc = sqlContext.sql("select * from antuit_stage."+args(0)) //load the Previously Processes table  from Data Lake
-        val dfDelta = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load the delta data from Impala
+        val dfDelta = sqlContext.sql("select * from mrssqoopdailydelta."+args(1)) // Load the delta data from Impala
         val res = addDeltaIncremental(dfProc, dfDelta )
         val cal = Calendar.getInstance()
         val Date =cal.get(Calendar.DATE )
