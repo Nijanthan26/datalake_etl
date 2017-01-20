@@ -23,7 +23,7 @@ object test {
 
       // create the statement, and run the select query
       val statement = connection.createStatement()
-      val resultSet = statement.executeQuery("show tables")
+      val resultSet = statement.executeQuery("SELECT * FROM pg_catalog.pg_tables")
       while ( resultSet.next() ) {
         val host = resultSet.getString(1)
         println(host)
