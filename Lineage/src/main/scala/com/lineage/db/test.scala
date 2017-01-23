@@ -48,7 +48,7 @@ object test {
        val prop = new Properties()
       prop.setProperty("user", username)
       prop.setProperty("password", password)
-      prop.setProperty("driver",driver)
+      //prop.setProperty("driver",driver)
       LatestData.write.jdbc(url, tablename, prop)
 
     } catch {
