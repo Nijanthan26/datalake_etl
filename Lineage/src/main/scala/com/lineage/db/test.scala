@@ -44,14 +44,12 @@ object test {
       Class.forName(driver)
       connection = DriverManager.getConnection(url, username, password)
 
-      // create the statement, and run the select query
-      val statement = connection.createStatement()
-       LatestData.registerTempTable("mytempTable")
-      val resultSet = statement.executeQuery("create table  " + tablename + " as select * from mytempTable")
-      while ( resultSet.next() ) {
-        val host = resultSet.getString(1)
-        println(host)
-      }
+       val prop = new Properties()
+      prop.setProperty("user", username)
+      prop.setProperty("password", password)
+      prop.setProperty("driver",driver)
+      LatestData.write.jdbc(url, tablename, prop)
+
     } catch {
       case e => e.printStackTrace
     }
