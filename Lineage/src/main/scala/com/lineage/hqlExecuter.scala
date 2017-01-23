@@ -12,7 +12,7 @@ import scala.reflect.runtime.universe
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 
-object test {
+object hqlExecuter {
   
   def main(args: Array[String]): Unit = {
       val conf = new SparkConf().setAppName("sqlrun")
