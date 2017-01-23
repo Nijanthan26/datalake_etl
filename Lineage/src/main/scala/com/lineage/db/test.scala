@@ -33,7 +33,7 @@ object test {
       //val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
       val LatestData = sqlContext.sql("select * from antuit_pricing."+tablename) // Load latest data from impala
      //res.show()
-      LatestData.registerTempTable("mytempTable")
+     
     
 
     // there's probably a better way to do this
@@ -46,6 +46,7 @@ object test {
 
       // create the statement, and run the select query
       val statement = connection.createStatement()
+       LatestData.registerTempTable("mytempTable")
       val resultSet = statement.executeQuery("create table  " + tablename + " as select * from mytempTable")
       while ( resultSet.next() ) {
         val host = resultSet.getString(1)
