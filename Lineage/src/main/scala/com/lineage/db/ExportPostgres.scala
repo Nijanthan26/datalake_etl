@@ -12,7 +12,7 @@ import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
-object test {
+object ExportPostgres{
   
   
  
