@@ -25,6 +25,7 @@ object test {
     val username = "root"
     val password = "TiMLRHdCNLftYOLskOkF"
     val tablename = args(0)
+     val tablenameDest = args(1)
      
       val conf = new SparkConf().setAppName("SQL_LOAD")
       val sc = new SparkContext(conf)
@@ -49,7 +50,7 @@ object test {
       prop.setProperty("user", username)
       prop.setProperty("password", password)
       //prop.setProperty("driver",driver)
-      LatestData.write.jdbc(url, tablename, prop)
+      LatestData.write.jdbc(url, tablenameDest, prop)
 
     } catch {
       case e => e.printStackTrace
