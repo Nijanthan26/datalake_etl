@@ -1,0 +1,281 @@
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+drop table if exists antuit_pricing.mrs_staging"
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+create table antuit_pricing.mrs_staging
+(
+facilityid string  
+,fcustcode string  
+,flot string  
+,finvoice string  
+,fdatestamp string  
+,forigamt double  
+,frate double  
+,fqty_billed double  
+,fweight_billed double  
+,fbasis double  
+,fgl string  
+,ren_pd double  
+,fbilledby string 
+)
+"
+
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+insert into antuit_pricing.mrs_staging
+select distinct
+a.facilityid 
+,a.fcustcode 
+,c.flot 
+,d.finvoice 
+,a.fdatestamp 
+,d.forigamt 
+,d.frate 
+,d.fqty as fqty_billed 
+,d.fweight as fweight_billed 
+,d.fbasis 
+,d.fgl  
+,case when upper(e.fbilltype)='RS' then e.frs_days else NULL end as ren_pd
+,d.fbilledby 
+from antuit_stage.dl_mrs_phy_trn_delta a left join antuit_stage.dl_mrs_phy_mst_delta pm on (
+concat(a.fbatch
+,a.fsequence) = pm.ftrack and
+a.fserial = pm.fserial and
+a.fcustcode = pm.fcustcode and
+a.facilityid = pm.facilityid
+)
+left join antuit_stage.dl_mrs_inv_trn_delta b on
+(a.facilityid = b.facilityid and
+a.fcustcode = b.fcustcode and 
+concat(a.fbatch
+,a.fsequence) = concat(b.fbatch
+,b.fsequence) and
+a.frectype = b.frectype and a.ftrack = b.ftrack) left join antuit_stage.dl_mrs_inv_mst_delta c on
+(b.facilityid = c.facilityid and
+b.fcustcode = c.fcustcode and
+concat(b.fbatch
+,b.fsequence) = concat(c.fbatch
+,c.fsequence) and
+b.frectype = c.frectype and
+b.fprodgroup = c.fprodgroup and
+b.fproduct = c.fproduct)  
+left join antuit_stage.dl_mrs_billhist_delta d on 
+(c.facilityid = d.facilityid and
+c.fcustcode = d.fcustcode and 
+concat(c.fbatch
+,c.fsequence) = concat(d.fbatch
+,d.fsequence) and 
+c.flot = d.flot and
+c.fprodgroup = d.fprodgroup and 
+c.fproduct = d.fproduct and
+c.fpricecode = d.fpricecode
+) left join antuit_stage.dl_mrs_price_delta e on (
+c.fcustcode = e.fcustcode and 
+c.facilityid = e.facilityid and
+c.fpricecode = e.fpricecode
+)"
+
+
+
+--HJ
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+drop table if exists hj_pre_staging_1"
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+create table antuit_pricing.hj_pre_staging_1
+( 
+wh_id string  
+,customer_code string  
+,lot_number string  
+,invoice_id int  
+,generated_date string  
+,charge_amount double  
+,rate double  
+,report_qty double  
+,report_weight double  
+,weight_increment double  
+,chargeback_code string   
+,ren_pd int 
+,uom string  
+,chargeback_type string
+)
+"
+
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+insert into antuit_pricing.hj_pre_staging_1
+select 
+d.wh_id,
+m.customer_code,
+d.lot_number,
+d.invoice_id,
+inv.generated_date,
+d.charge_amount,
+chrate.rate,
+d.report_qty,
+d.report_weight,
+chrate.weight_increment,
+f.chargeback_code, 
+cast(null as string) as hj_ren_pd,
+d.uom,
+g.chargeback_type
+from
+antuit_stage.hj_t_bmm_charge_event_ref c
+inner join antuit_stage.hj_t_bmm_charge d on (c.charge_id = d.charge_id)
+inner join antuit_stage.hj_t_bmm_chargeback_rate chrate on (d.chargeback_rate_id = chrate.chargeback_rate_id)	
+inner join antuit_stage.hj_t_bmm_cont_inv_type_chargeback f on (d.chargeback_id = f.chargeback_id and chrate.chargeback_id = f.chargeback_id) 
+inner join antuit_stage.hj_t_bmm_invoice inv on (d.invoice_id=inv.invoice_id)
+inner join antuit_stage.hj_t_bmm_contract_invoice_type k on (inv.contract_invoice_type_id = k.contract_invoice_type_id and f.contract_invoice_type_id=k.contract_invoice_type_id) 
+inner join antuit_stage.hj_t_bmm_contract_master l on (k.contract_id = l.contract_id) 
+inner join antuit_stage.hj_t_bmm_customer m on (l.customer_id = m.customer_id)	
+inner join antuit_stage.hj_t_bmm_chargeback_type g on (f.chargeback_type_id = g.chargeback_type_id) 
+where g.chargeback_type='WMS Event'
+"	
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+drop table table antuit_pricing.hj_staging
+"
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+create table antuit_pricing.hj_staging as select distinct * from antuit_pricing.hj_pre_staging_1
+"	
+
+
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+drop table if exists hj_pre_staging_2"
+
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+create table antuit_pricing.hj_pre_staging_2
+as
+select distinct
+chg.wh_id
+,cust.customer_code
+,chg.lot_number
+,chg.invoice_id
+,inv.generated_date
+,chg.charge_amount
+,chg.rate
+,chg.report_qty
+,chg.report_weight
+,cbrate.weight_increment
+,citc.chargeback_code
+,case when freq.every_x is null then pua.anniversary_period else freq.every_x end as ren_pd
+,chg.uom
+,ct.chargeback_type
+from
+antuit_stage.hj_t_bmm_charge chg 
+inner join antuit_stage.hj_t_bmm_cont_inv_type_chargeback citc on (chg.chargeback_id = citc.chargeback_id)
+inner join antuit_stage.hj_t_bmm_chargeback_type ct on (citc.chargeback_type_id = ct.chargeback_type_id)
+inner join antuit_stage.hj_t_bmm_chargeback_rate cbrate on (citc.chargeback_id = cbrate.chargeback_id and cbrate.chargeback_rate_id=chg.chargeback_rate_id)
+inner join antuit_stage.hj_t_bmm_invoice inv on (chg.invoice_id = inv.invoice_id)
+inner join antuit_stage.hj_t_bmm_contract_invoice_type cit on (cit.contract_invoice_type_id = inv.contract_invoice_type_id and citc.contract_invoice_type_id=cit.contract_invoice_type_id)
+inner join antuit_stage.hj_t_bmm_contract_master cm on (cit.contract_id = cm.contract_id)
+inner join antuit_stage.hj_t_bmm_customer cust on (cm.customer_id = cust.customer_id)
+left join antuit_stage.hj_t_bmm_param_uom_storage pus on (citc.chargeback_id = pus.chargeback_id)
+left join antuit_stage.hj_t_bmm_frequency freq on (citc.chargeback_id = freq.chargeback_id)
+left join antuit_stage.hj_t_bmm_param_uom_anniversary pua on (citc.chargeback_id = pua.chargeback_id)
+left join antuit_stage.hj_t_bmm_param_recurring pr on (citc.chargeback_id = pr.chargeback_id)
+left join antuit_stage.hj_t_bmm_param_manual_csr_prompt mcp on (citc.chargeback_id = mcp.chargeback_id)
+left join antuit_stage.hj_t_bmm_param_manual_prompt mp on (citc.chargeback_id = mp.chargeback_id)
+left join antuit_stage.hj_t_bmm_param_manual_adhoc ma on (citc.chargeback_id = ma.chargeback_id)
+where ct.chargeback_type <>'WMS Event'
+"
+
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+insert into antuit_pricing.hj_staging
+select * from antuit_pricing.hj_pre_staging_2
+"
+
+
+
+--Consolidating HJ ans MRS
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+drop table if exists antuit_pricing.hj_mrs_staging"
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+create table antuit_pricing.hj_mrs_staging
+(
+facility_id string  
+,customer_id string  
+,lot_number string  
+,invoice string  
+,invoice_date string  
+,tot_invoice_amt double  
+,rate_charged double  
+,billed_qty double  
+,billed_weight double  
+,basis double  
+,charge_code string  
+,ren_pd double  
+,UOM string 
+,wms_system string
+)
+"
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+insert into antuit_pricing.hj_mrs_staging
+select distinct
+hj.wh_id   
+,hj.customer_code   
+,hj.lot_number   
+,hj.invoice_id   
+,hj.generated_date   
+,hj.charge_amount   
+,hj.rate   
+,hj.report_qty   
+,hj.report_weight   
+,hj.weight_increment   
+,hj.chargeback_code   
+,hj.ren_pd   
+,hj.uom   
+--,hj.chargeback_type
+,'HIGHJUMP' as wms_system 
+from antuit_pricing.hj_staging hj
+"
+
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+insert into antuit_pricing.hj_mrs_staging
+select distinct
+mrs.facilityid   
+,mrs.fcustcode   
+,mrs.flot   
+,mrs.finvoice   
+,mrs.fdatestamp   
+,mrs.forigamt   
+,mrs.frate   
+,mrs.fqty_billed   
+,mrs.fweight_billed   
+,mrs.fbasis   
+,mrs.fgl   
+,mrs.ren_pd   
+,mrs.fbilledby 
+,'MRS' as wms_system 
+from antuit_pricing.mrs_staging mrs
+"
+
+
+
+--this logic has to be changed.
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+create table antuit_pricing.hjmrs_cust_xref
+as
+select distinct
+stg.*
+,concat((case when stg.wms_system ='HJ' then 'HIGHJUMP' else nvl(cast(stg.wms_system as string),cast('' as string)) end), 
+nvl((case when stg.customer_id like '0%' then cast(cast(stg.customer_id as int) as string) else cast(stg.customer_id as string) end),cast('' as string))) as UID_stg
+,xref.UID
+,xref.LIN_CUSTOMER_ENTERPRISE_ID__C
+,xref.LIN_SURVIVOR_CUSTOMER_NAME__C
+from 
+antuit_pricing.hj_mrs_staging stg
+left join antuit_pricing.customer_xref xref
+on
+concat((case when stg.wms_system ='HJ' then 'HIGHJUMP' else nvl(cast(stg.wms_system as string),cast('' as string)) end), 
+nvl((case when stg.customer_id like '0%' then cast(cast(stg.customer_id as int) as string) else cast(stg.customer_id as string) end),cast('' as string)))
+= xref.UID"
+
+
