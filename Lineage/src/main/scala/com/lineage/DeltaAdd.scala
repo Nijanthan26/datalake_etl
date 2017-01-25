@@ -12,7 +12,7 @@ import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 
-object mrsDeltaAdd {
+object DeltaAdd {
   
 def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val initialDfSha = initialDfShaWithDate//.drop("archive_date")
