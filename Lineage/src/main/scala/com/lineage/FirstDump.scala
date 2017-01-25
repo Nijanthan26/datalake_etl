@@ -12,7 +12,7 @@ import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 
-object aclFirstDump {
+object mrsFirstDump {
   
   def addDeltaFirstTimeNoArc(deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val sparkSession = deltaDf.sparkSession
@@ -32,7 +32,7 @@ object aclFirstDump {
       import sqlContext.implicits._
  
       //val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
-      val LatestData = sqlContext.sql("select * from aclsqoopdailydelta."+args(1)) // Load latest data from impala
+      val LatestData = sqlContext.sql("select * from  "+args(1)) // Load latest data from impala
       val res = addDeltaFirstTimeNoArc(LatestData)
       //res.show()
       res.registerTempTable("mytempTable")
