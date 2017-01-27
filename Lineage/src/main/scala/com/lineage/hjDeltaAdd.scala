@@ -56,6 +56,9 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
         sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
+        
+        sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,"+ args(0) +",max(sequence) from antuit_stage."+ args(0)) 
+
         //sc.close()
       }
 }
