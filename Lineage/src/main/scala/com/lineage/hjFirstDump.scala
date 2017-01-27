@@ -77,7 +77,7 @@ object hjFirstDump {
       sqlContext.sql("create table antuit_stage."+args(0)+" as select * from mytempTable");
       }
 
-   sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,"+ args(0) +",max(sequence) from antuit_stage."+ args(0)) 
+   sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0))  
   
       }
   
