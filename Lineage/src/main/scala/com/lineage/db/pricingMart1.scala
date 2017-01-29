@@ -33,11 +33,11 @@ object pricingMart1 {
 					prop.setProperty("user",username)
 					prop.setProperty("password",password)
 
-					res1.write.jdbc(url, "test2", prop)
+					res1.write.jdbc(url, "test3", prop)
 
 					
 
-					res1.write.mode(SaveMode.Append).jdbc(url, "test2", prop)
+					res1.write.mode(SaveMode.Append).jdbc(url, "test3", prop)
 
 
 	}
