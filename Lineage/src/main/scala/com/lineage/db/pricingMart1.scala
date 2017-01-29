@@ -37,7 +37,7 @@ object pricingMart1 {
 
 					
 
-					res1.write.mode(SaveMode.Append).jdbc(url, "test3", prop)
+					res1.write.mode("append").jdbc(url, "test3", prop)
 
 
 	}
