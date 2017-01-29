@@ -18,7 +18,7 @@ object ExportPostgres{
  
   def main(args: Array[String]) {
     // connect to the database named "mysql" on the localhost
-     val url = "jdbc:postgresql://metricsone.cpslmao02wkq.us-west-2.rds.amazonaws.com:5432/postgres"
+    val url = "jdbc:postgresql://metricsone.cpslmao02wkq.us-west-2.rds.amazonaws.com:5432/postgres"
     val username = "root"
     val password = "TiMLRHdCNLftYOLskOkF"
     
@@ -37,6 +37,9 @@ object ExportPostgres{
       prop.setProperty("password",password)
 
       data.write.jdbc(url, tablename, prop)
+      
+      
+    // data.write.mode(SaveMode.Append).jdbc(url, "test2", prop)
 
   }
 
