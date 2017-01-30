@@ -84,7 +84,7 @@ c.fpricecode = e.fpricecode
 mrsStagingDf.registerTempTable("mrs_staging")
 
 val res1 = sqlContext.sql("select count(*) from mrs_staging")
-println (res1)
+println ("count is :"+res1)
 	}
 	
 }
