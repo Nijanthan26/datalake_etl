@@ -1,4 +1,4 @@
-name := "simple-spark-scala"
+name := "lineage-datalake-spark-scala"
 version := "1.0"
 scalaVersion := "2.11.8"
 
