@@ -187,7 +187,7 @@ stg.*
 ,costc.LIN_WORKDAY_COST_CENTER__C
 ,costc.LIN_WORKDAY_LOCATION_ID__C
 from 
-antuit_pricing.mrs_staging stg
+mrs_staging stg
 left join (select distinct uid,LIN_ACCOUNT__C,LIN_CUSTOMER_ENTERPRISE_ID__C,LIN_SURVIVOR_CUSTOMER_NAME__C,LIN_SOURCE_SYSTEM_NAME__C from antuit_pricing.customer_xref where LIN_SOURCE_SYSTEM_NAME__C ='MRS') xref
 on concat('MRS', nvl((case when stg.facilityid like '0%' then cast(cast(stg.facilityid as int) as string) else cast(stg.facilityid as string) end),cast('' as string)),
 nvl((case when stg.fcustcode like '0%' then cast(cast(stg.fcustcode as int) as string) else cast(stg.fcustcode as string) end),cast('' as string)))= xref.UID
@@ -201,7 +201,21 @@ ON (tab.LIN_ACCOUNT__C=acxref.id)""")
 
 mrsCustXrefDf.registerTempTable("mrs_cust_xref")
 
-val hjCustRefStgDf = sqlContext.sql(""" select distinct
+val hjCustRefDf = sqlContext.sql("""select distinct
+tab.*
+,acxref.NAME
+,acxref.BILLINGSTREET
+,acxref.BILLINGCITY
+,acxref.BILLINGSTATE
+,acxref.BILLINGPOSTALCODE
+,acxref.BILLINGCOUNTRY
+,acxref.PHONE
+,acxref.FAX
+,acxref.ACCOUNTNUMBER
+,acxref.WEBSITE 
+from
+(
+select distinct
 stg.*
 ,concat('HIGHJUMP', nvl(stg.customer_code,cast('' as string))) as UID_stg
 ,cast('HIGHJUMP' as string) as LIN_SOURCE_SYSTEM_NAME__C
@@ -220,25 +234,8 @@ left join (select distinct uid,LIN_CONSOLIDATED_CHARGE_CODE__C,LIN_CONSOLIDATED_
 on concat('HIGHJUMP',nvl((case when stg.chargeback_code like '0%' then cast(cast(stg.chargeback_code as int) as string) else cast(stg.chargeback_code as string) end),cast('' as string)))=chxref.uid
 left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref) costc
 on concat('HIGHJUMP',nvl((case when stg.wh_id like '0%' then cast(cast(stg.wh_id as int) as string) else cast(stg.wh_id as string) end),cast('' as string)))=costc.uid
-""")
-
-hjCustRefStgDf.registerTempTable("hjCustRefStg")
-
-val hjCustRefDf = sqlContext.sql("""select distinct
-tab.*
-,acxref.NAME
-,acxref.BILLINGSTREET
-,acxref.BILLINGCITY
-,acxref.BILLINGSTATE
-,acxref.BILLINGPOSTALCODE
-,acxref.BILLINGCOUNTRY
-,acxref.PHONE
-,acxref.FAX
-,acxref.ACCOUNTNUMBER
-,acxref.WEBSITE 
-from
-hjCustRefStg  tab
-LEFT JOIN antuit_pricing.account_revised_xref ACXREF
+) tab
+LEFT JOIN account_revised_xref ACXREF
 ON (tab.LIN_ACCOUNT__C=acxref.id)""")
 
 hjCustRefDf.registerTempTable("hj_cust_xref")
