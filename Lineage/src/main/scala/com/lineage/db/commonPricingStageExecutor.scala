@@ -309,9 +309,9 @@ hj_cust_xref""")
 
 val commonPricingStageDF = commonPricingStageDf1.unionAll(commonPricingStageDf2)
 
-commonPricingStageDF.registerTempTable("common_pricing_stage")
+//commonPricingStageDF.registerTempTable("common_pricing_stage")
 
-commonPricingStageDF.write.jdbc(url, "test3", prop)
+commonPricingStageDF.write.jdbc(url, "test4", prop)
 
 	}
 	
