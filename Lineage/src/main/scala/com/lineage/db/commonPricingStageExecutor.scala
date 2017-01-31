@@ -162,7 +162,7 @@ hjStagingDf.registerTempTable("hj_staging")
 
 
 val mrsCustXrefDf = sqlContext.sql("""select distinct
-select tab.*
+tab.*
 ,acxref.NAME
 ,acxref.BILLINGSTREET
 ,acxref.BILLINGCITY
