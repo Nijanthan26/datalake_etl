@@ -196,7 +196,7 @@ on concat('MRS',nvl((case when stg.fgl like '0%' then cast(cast(stg.fgl as int) 
 left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref) costc
 on concat('MRS',nvl((case when stg.facilityid like '0%' then cast(cast(stg.facilityid as int) as string) else cast(stg.facilityid as string) end),cast('' as string)))=costc.uid
 ) tab
-LEFT JOIN account_revised_xref ACXREF
+LEFT JOIN antuit_pricing.account_revised_xref ACXREF
 ON (tab.LIN_ACCOUNT__C=acxref.id)""")
 
 mrsCustXrefDf.registerTempTable("mrs_cust_xref")
