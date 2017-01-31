@@ -45,7 +45,7 @@ object commonPricingStageExecutor {
 ,d.fnumdays
 ,d.fbilltype
 ,d.fnotes
-,(case when upper(d.fbilltype)='RS' then e.frs_days when upper(d.fbilltype)='IS' then e.fis_days else d.fnumdays end)ren_pd
+,(case when upper(d.fbilltype)='RS' then e.frs_days when upper(d.fbilltype)='IS' then e.fis_days else d.fnumdays end) as ren_pd
 ,d.fbilledby from antuit_stage.dl_mrs_phy_trn_delta a left join antuit_stage.dl_mrs_phy_mst_delta pm on (concat(a.fbatch
 ,a.fsequence) = pm.ftrack and
 a.fserial = pm.fserial and
@@ -291,7 +291,7 @@ lin_source_system_name__c
 ,report_weight
 ,weight_increment
 ,chargeback_code
-,ren_pd
+,hj_ren_pd as ren_pd
 ,uom
 ,cast(null as string)
 ,lin_survivor_customer_name__c
