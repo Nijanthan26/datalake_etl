@@ -233,7 +233,7 @@ on concat('HIGHJUMP',nvl((case when stg.chargeback_code like '0%' then cast(cast
 left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref) costc
 on concat('HIGHJUMP',nvl((case when stg.wh_id like '0%' then cast(cast(stg.wh_id as int) as string) else cast(stg.wh_id as string) end),cast('' as string)))=costc.uid
 ) tab
-LEFT JOIN account_revised_xref ACXREF
+LEFT JOIN antuit_pricing.account_revised_xref ACXREF
 ON (tab.LIN_ACCOUNT__C=acxref.id)""")
 
 hjCustRefDf.registerTempTable("hj_cust_xref")
