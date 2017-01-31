@@ -201,21 +201,7 @@ ON (tab.LIN_ACCOUNT__C=acxref.id)""")
 
 mrsCustXrefDf.registerTempTable("mrs_cust_xref")
 
-val hjCustRefDf = sqlContext.sql("""select distinct
-tab.*
-,acxref.NAME
-,acxref.BILLINGSTREET
-,acxref.BILLINGCITY
-,acxref.BILLINGSTATE
-,acxref.BILLINGPOSTALCODE
-,acxref.BILLINGCOUNTRY
-,acxref.PHONE
-,acxref.FAX
-,acxref.ACCOUNTNUMBER
-,acxref.WEBSITE 
-from
-(
-select distinct
+val hjCustRefStgDf = sqlContext.sql(""" select distinct
 stg.*
 ,concat('HIGHJUMP', nvl(stg.customer_code,cast('' as string))) as UID_stg
 ,cast('HIGHJUMP' as string) as LIN_SOURCE_SYSTEM_NAME__C
@@ -234,7 +220,24 @@ left join (select distinct uid,LIN_CONSOLIDATED_CHARGE_CODE__C,LIN_CONSOLIDATED_
 on concat('HIGHJUMP',nvl((case when stg.chargeback_code like '0%' then cast(cast(stg.chargeback_code as int) as string) else cast(stg.chargeback_code as string) end),cast('' as string)))=chxref.uid
 left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref) costc
 on concat('HIGHJUMP',nvl((case when stg.wh_id like '0%' then cast(cast(stg.wh_id as int) as string) else cast(stg.wh_id as string) end),cast('' as string)))=costc.uid
-) tab
+""")
+
+hjCustRefStgDf.registerTempTable("hjCustRefStg")
+
+val hjCustRefDf = sqlContext.sql("""select distinct
+tab.*
+,acxref.NAME
+,acxref.BILLINGSTREET
+,acxref.BILLINGCITY
+,acxref.BILLINGSTATE
+,acxref.BILLINGPOSTALCODE
+,acxref.BILLINGCOUNTRY
+,acxref.PHONE
+,acxref.FAX
+,acxref.ACCOUNTNUMBER
+,acxref.WEBSITE 
+from
+hjCustRefStg  tab
 LEFT JOIN antuit_pricing.account_revised_xref ACXREF
 ON (tab.LIN_ACCOUNT__C=acxref.id)""")
 
