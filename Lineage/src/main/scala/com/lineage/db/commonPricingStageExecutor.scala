@@ -31,10 +31,8 @@ object commonPricingStageExecutor {
 					prop.setProperty("user",username)
 					prop.setProperty("password",password)
   
-					val mrsStagingDf = sqlContext.sql("""select distinct nvl((case when a.facilityid like '0%' then cast(cast(a.facilityid as int) as string) else cast(a.facilityid as string) end),cast('' as string))
---a.facilityid 
-,nvl((case when a.fcustcode like '0%' then cast(cast(a.fcustcode as int) as string) else cast(a.fcustcode as string) end),cast('' as string))
---,a.fcustcode 
+					val mrsStagingDf = sqlContext.sql("""select distinct nvl((case when a.facilityid like '0%' then cast(cast(a.facilityid as int) as string) else cast(a.facilityid as string) end),cast('' as string)) facilityid 
+,nvl((case when a.fcustcode like '0%' then cast(cast(a.fcustcode as int) as string) else cast(a.fcustcode as string) end),cast('' as string)) fcustcode 
 ,c.flot 
 ,d.finvoice 
 ,a.fdatestamp 
@@ -85,7 +83,7 @@ c.facilityid = e.facilityid and
 c.fpricecode = e.fpricecode
 )""")
 
-mrsStagingDf.registerTempTable("mrs_staging")
+
 
 
 val hjPreStaging1Df = sqlContext.sql("""select 
@@ -115,7 +113,7 @@ inner join antuit_stage.hj_t_bmm_customer m on (l.customer_id = m.customer_id)
 inner join (select distinct chargeback_type_id,chargeback_type from antuit_stage.hj_t_bmm_chargeback_type where chargeback_type='WMS Event') g on (f.chargeback_type_id = g.chargeback_type_id)""")
 
 hjPreStaging1Df.registerTempTable("hj_pre_staging_1")
-
+mrsStagingDf.registerTempTable("mrs_staging")
 val hjStagingDf1 = sqlContext.sql("select distinct * from hj_pre_staging_1")
 
 
