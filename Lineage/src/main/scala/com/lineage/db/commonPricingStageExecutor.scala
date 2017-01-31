@@ -295,6 +295,7 @@ lin_source_system_name__c
 ,uom
 ,cast(null as string)
 ,lin_survivor_customer_name__c
+
 ,BILLINGSTREET
 ,BILLINGCITY
 ,BILLINGSTATE
@@ -307,11 +308,14 @@ lin_source_system_name__c
 from
 hj_cust_xref""")
 
-val commonPricingStageDF = commonPricingStageDf1.unionAll(commonPricingStageDf2)
+//val commonPricingStageDF = commonPricingStageDf1.unionAll(commonPricingStageDf2)
+
+println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
+commonPricingStageDf1.write.jdbc(url, "test5", prop)
 
 //commonPricingStageDF.registerTempTable("common_pricing_stage")
 
-commonPricingStageDF.write.jdbc(url, "test4", prop)
+commonPricingStageDf2.write.mode("append").jdbc(url, "test5", prop)
 
 	}
 	
