@@ -311,11 +311,12 @@ hj_cust_xref""")
 //val commonPricingStageDF = commonPricingStageDf1.unionAll(commonPricingStageDf2)
 
 println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
-commonPricingStageDf1.write.jdbc(url, "test5", prop)
+
+commonPricingStageDf1.write.mode("append").jdbc(url, "go", prop)
 
 //commonPricingStageDF.registerTempTable("common_pricing_stage")
 
-commonPricingStageDf2.write.mode("append").jdbc(url, "test5", prop)
+commonPricingStageDf2.write.mode("append").jdbc(url, "go", prop)
 
 	}
 	
