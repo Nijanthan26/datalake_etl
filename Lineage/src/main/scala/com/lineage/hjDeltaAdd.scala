@@ -42,6 +42,8 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 
         val dfProc = sqlContext.sql("select * from antuit_stage."+args(0)) //load the Previously Processes table  from Data Lake
         val dfDelta = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load the delta data from Impala
+      if(dfDelta.count >0)
+      {
         val res = addDeltaIncremental(dfProc, dfDelta )
         val cal = Calendar.getInstance()
         val Date =cal.get(Calendar.DATE )
@@ -59,7 +61,10 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
         
-        
+      }
+      else{
+       System.exit(0)
+      }
         //sc.close()
       }
 }
