@@ -175,8 +175,8 @@ tab.*
 ,acxref.WEBSITE 
 from
 (select distinct
-stg.*
-,concat('MRS',stg.facilityid, nvl(stg.fcustcode,cast('' as string))) as UID_stg
+mrs_staging.*
+,concat('MRS',mrs_staging.facilityid, nvl(mrs_staging.fcustcode,cast('' as string))) as UID_mrs_staging
 --,xref.UID
 ,'MRS' as LIN_SOURCE_SYSTEM_NAME__C
 ,xref.LIN_CUSTOMER_ENTERPRISE_ID__C
@@ -187,14 +187,14 @@ stg.*
 ,costc.LIN_WORKDAY_COST_CENTER__C
 ,costc.LIN_WORKDAY_LOCATION_ID__C
 from 
-mrs_staging stg
+mrs_staging
 left join (select distinct uid,LIN_ACCOUNT__C,LIN_CUSTOMER_ENTERPRISE_ID__C,LIN_SURVIVOR_CUSTOMER_NAME__C,LIN_SOURCE_SYSTEM_NAME__C from antuit_pricing.customer_xref where LIN_SOURCE_SYSTEM_NAME__C ='MRS') xref
-on concat('MRS', nvl((case when stg.facilityid like '0%' then cast(cast(stg.facilityid as int) as string) else cast(stg.facilityid as string) end),cast('' as string)),
-nvl((case when stg.fcustcode like '0%' then cast(cast(stg.fcustcode as int) as string) else cast(stg.fcustcode as string) end),cast('' as string)))= xref.UID
+on concat('MRS', nvl((case when mrs_staging.facilityid like '0%' then cast(cast(mrs_staging.facilityid as int) as string) else cast(mrs_staging.facilityid as string) end),cast('' as string)),
+nvl((case when mrs_staging.fcustcode like '0%' then cast(cast(mrs_staging.fcustcode as int) as string) else cast(mrs_staging.fcustcode as string) end),cast('' as string)))= xref.UID
 left join (select distinct uid,LIN_CONSOLIDATED_CHARGE_CODE__C,LIN_CONSOLIDATED_CHARGE_NAME__C from antuit_pricing.chargecode_xref) chxref
-on concat('MRS',nvl((case when stg.fgl like '0%' then cast(cast(stg.fgl as int) as string) else cast(stg.fgl as string) end),cast('' as string)))=chxref.uid
+on concat('MRS',nvl((case when mrs_staging.fgl like '0%' then cast(cast(mrs_staging.fgl as int) as string) else cast(mrs_staging.fgl as string) end),cast('' as string)))=chxref.uid
 left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref) costc
-on concat('MRS',nvl((case when stg.facilityid like '0%' then cast(cast(stg.facilityid as int) as string) else cast(stg.facilityid as string) end),cast('' as string)))=costc.uid
+on concat('MRS',nvl((case when mrs_staging.facilityid like '0%' then cast(cast(mrs_staging.facilityid as int) as string) else cast(mrs_staging.facilityid as string) end),cast('' as string)))=costc.uid
 ) tab
 LEFT JOIN antuit_pricing.account_revised_xref ACXREF
 ON (tab.LIN_ACCOUNT__C=acxref.id)""")
