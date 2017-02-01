@@ -244,7 +244,7 @@ lin_source_system_name__c
 ,nvl(lin_customer_enterprise_id__c ,"NA") as lin_customer_enterprise_id__c
 ,nvl(lin_workday_cost_center__c ,"NA") as lin_workday_cost_center__c
 ,nvl(lin_workday_location_id__c ,"NA") as lin_workday_location_id__c
-,cast(lin_consolidated_charge_code__c as string)
+,nvl(cast(lin_consolidated_charge_code__c as string) , "NA") as lin_consolidated_charge_code__c
 ,nvl(lin_consolidated_charge_name__c ,"NA") as lin_consolidated_charge_name__c
 ,nvl(facilityid ,"NA") as facility_id 
 ,nvl(fcustcode,"NA") as customer_id
@@ -259,7 +259,7 @@ lin_source_system_name__c
 ,nvl(fgl ,"NA") as charge_code
 ,nvl(ren_pd ,0) as ren_pd
 ,nvl(fbilledby ,"NA") as unit_of_measurement
-,cast(null as string) as currencyisocode
+,nvl(cast(null as string),"NA") as currencyisocode
 ,nvl(lin_survivor_customer_name__c ,"NA") as lin_survivor_customer_name__c
 ,nvl(billingstreet ,"NA") as billingstreet
 ,nvl(billingcity ,"NA") as billingcity
@@ -293,7 +293,7 @@ lin_source_system_name__c
 ,nvl(chargeback_code  , "NA" ) as charge_code
 ,nvl(hj_ren_pd , 0 ) as ren_pd 
 ,nvl(uom  , "NA" )as unit_of_measurement
-,"NA" as currencyisocode
+,nvl(cast(null as string),"NA") as currencyisocode
 ,nvl(lin_survivor_customer_name__c , "NA" ) as lin_survivor_customer_name__c
 ,nvl(billingstreet , "NA" ) as billingstreet
 ,nvl(billingcity , "NA" ) as billingcity
