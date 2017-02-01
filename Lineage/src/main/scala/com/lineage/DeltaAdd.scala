@@ -39,7 +39,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         
         sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0))  
        
-        val dfProc = sqlContext.sql("select * from antuit_stage."+args(0)) //load the Previously Processes table  from Data Lake
+        val dfProc = sqlContext.sql("select * from "+args(0)) //load the Previously Processes table  from Data Lake
         val dfDelta = sqlContext.sql("select * from  "+args(1)) // Load the delta data from Impala
         if(dfDelta.count >0)
         {
@@ -54,11 +54,11 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         
         res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
         //res.show()
-        sqlContext.sql("create table antuit_stage."+args(0)+"_merge like antuit_stage."+ args(0))
-        sqlContext.sql("drop table if exists antuit_stage."+args(0))
-        sqlContext.sql("create table antuit_stage."+args(0)+" like antuit_stage."+ args(0)+"_merge")
-        sqlContext.sql("ALTER TABLE antuit_stage."+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
-        sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
+        sqlContext.sql("create table "+args(0)+"_merge like "+ args(0))
+        sqlContext.sql("drop table if exists "+args(0))
+        sqlContext.sql("create table "+args(0)+" like "+ args(0)+"_merge")
+        sqlContext.sql("ALTER TABLE "+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
+        sqlContext.sql("drop table if exists ."+args(0)+"_merge")
     }
       else{
        System.exit(0)
