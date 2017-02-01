@@ -246,30 +246,30 @@ lin_source_system_name__c
 ,lin_workday_location_id__c
 ,cast(lin_consolidated_charge_code__c as string)
 ,lin_consolidated_charge_name__c
-,facilityid
-,fcustcode
-,flot
-,finvoice
-,fdatestamp
-,forigamt
-,frate
-,fqty_billed
-,fweight_billed
-,fbasis
-,fgl
+,facilityid as facility_id
+,fcustcode as customer_id
+,flot as lot_number
+,finvoice as invoice
+,fdatestamp as invoice_date
+,forigamt as total_invoiced_amount
+,frate as rate_charged
+,fqty_billed as billed_qty
+,fweight_billed as billed_weight
+,fbasis as basis
+,fgl as charge_code
 ,ren_pd
-,fbilledby
-,cast(null as string)
+,fbilledby as unit_of_measurement
+,cast(null as string) as currencyisocode
 ,lin_survivor_customer_name__c
-,BILLINGSTREET
-,BILLINGCITY
-,BILLINGSTATE
-,BILLINGPOSTALCODE
-,BILLINGCOUNTRY
-,PHONE
-,FAX
-,ACCOUNTNUMBER
-,WEBSITE 
+,billingstreet
+,billingcity
+,billingstate
+,billingpostalcode
+,billingcountry
+,phone
+,fax
+,accountnumber
+,website
 from
 mrs_cust_xref""")
 
@@ -280,39 +280,38 @@ lin_source_system_name__c
 ,lin_workday_location_id__c
 ,cast(lin_consolidated_charge_code__c as string)
 ,lin_consolidated_charge_name__c
-,wh_id
-,customer_code
+,wh_id as facility_id
+,customer_code as customer_id
 ,lot_number
-,cast(invoice_id as string)
-,generated_date
-,charge_amount
-,rate
-,report_qty
-,report_weight
-,weight_increment
-,chargeback_code
-,hj_ren_pd as ren_pd
-,uom
-,cast(null as string)
+,cast(invoice_id as string) as invoice
+,generated_date as invoice_date
+,charge_amount as total_invoiced_amount
+,rate as rate_charged
+,report_qty as billed_qty
+,report_weight as billed_weight
+,weight_increment as basis
+,chargeback_code as charge_code
+,ren_pd
+,uom as unit_of_measurement
+,cast(null as string) as currencyisocode
 ,lin_survivor_customer_name__c
-
-,BILLINGSTREET
-,BILLINGCITY
-,BILLINGSTATE
-,BILLINGPOSTALCODE
-,BILLINGCOUNTRY
-,PHONE
-,FAX
-,ACCOUNTNUMBER
-,WEBSITE 
+,billingstreet
+,billingcity
+,billingstate
+,billingpostalcode
+,billingcountry
+,phone
+,fax
+,accountnumber
+,website
 from
 hj_cust_xref""")
 
 //val commonPricingStageDF = commonPricingStageDf1.unionAll(commonPricingStageDf2)
 
-println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
+//println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
 
-commonPricingStageDf1.write.mode("append").jdbc(url, "go", prop)
+commonPricingStageDf1.write.jdbc(url, "go", prop)
 
 //commonPricingStageDF.registerTempTable("common_pricing_stage")
 
