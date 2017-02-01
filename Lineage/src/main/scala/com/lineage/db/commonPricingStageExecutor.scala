@@ -311,11 +311,16 @@ hj_cust_xref""")
 
 //println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
 
-commonPricingStageDf1.write.mode("append").jdbc(url, "go2", prop)
+//commonPricingStageDf1.write.mode("append").jdbc(url, "go2", prop)
 
+commonPricingStageDf1.registerTempTable("commonPricingStage1")
+commonPricingStageDf2.registerTempTable("commonPricingStage2")
+
+sqlContext.sql("create table default.commonPricingStage1 as select * from commonPricingStage1")
+sqlContext.sql("create table default.commonPricingStage2 as select * from commonPricingStage2")
 //commonPricingStageDF.registerTempTable("common_pricing_stage")
 
-commonPricingStageDf2.write.mode("append").jdbc(url, "go2", prop)
+//commonPricingStageDf2.write.mode("append").jdbc(url, "go2", prop)
 
 	}
 	
