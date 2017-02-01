@@ -291,7 +291,7 @@ lin_source_system_name__c
 ,report_weight as billed_weight
 ,weight_increment as basis
 ,chargeback_code as charge_code
-,ren_pd
+,hj_ren_pd as ren_pd
 ,uom as unit_of_measurement
 ,cast(null as string) as currencyisocode
 ,lin_survivor_customer_name__c
