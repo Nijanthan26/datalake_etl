@@ -58,7 +58,7 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
         sqlContext.sql("drop table if exists "+args(0))
         sqlContext.sql("create table "+args(0)+" like "+ args(0)+"_merge")
         sqlContext.sql("ALTER TABLE "+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
-        sqlContext.sql("drop table if exists ."+args(0)+"_merge")
+        sqlContext.sql("drop table if exists  "+args(0)+"_merge")
     }
       else{
        System.exit(0)
