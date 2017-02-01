@@ -311,11 +311,11 @@ hj_cust_xref""")
 
 //println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
 
-commonPricingStageDf1.write.mode("append").jdbc(url, "go", prop)
+commonPricingStageDf1.write.mode("append").jdbc(url, "go1", prop)
 
 //commonPricingStageDF.registerTempTable("common_pricing_stage")
 
-commonPricingStageDf2.write.mode("append").jdbc(url, "go", prop)
+commonPricingStageDf2.write.mode("append").jdbc(url, "go1", prop)
 
 	}
 	
