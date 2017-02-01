@@ -240,70 +240,70 @@ hjCustRefDf.registerTempTable("hj_cust_xref")
 
 
 val commonPricingStageDf1 = sqlContext.sql("""select distinct
-lin_source_system_name__c
-,lin_customer_enterprise_id__c
-,lin_workday_cost_center__c
-,lin_workday_location_id__c
+lin_source_system_name__c  
+,nvl(lin_customer_enterprise_id__c ,"NA") as lin_customer_enterprise_id__c
+,nvl(lin_workday_cost_center__c ,"NA") as lin_workday_cost_center__c
+,nvl(lin_workday_location_id__c ,"NA") as lin_workday_location_id__c
 ,cast(lin_consolidated_charge_code__c as string)
-,lin_consolidated_charge_name__c
-,facilityid as facility_id
-,nvl(fcustcode,"null") as customer_id
-,flot as lot_number
-,finvoice as invoice
-,fdatestamp as invoice_date
-,forigamt as total_invoiced_amount
-,frate as rate_charged
-,fqty_billed as billed_qty
-,fweight_billed as billed_weight
-,fbasis as basis
-,fgl as charge_code
-,ren_pd
-,fbilledby as unit_of_measurement
+,nvl(lin_consolidated_charge_name__c ,"NA") as lin_consolidated_charge_name__c
+,nvl(facilityid ,"NA") as facility_id 
+,nvl(fcustcode,"NA") as customer_id
+,nvl(flot ,"NA") as lot_number
+,nvl(finvoice ,"NA") as invoice
+,nvl(fdatestamp ,"NA") as invoice_date
+,nvl(forigamt , 0) as total_invoiced_amount
+,nvl(frate ,0) as rate_charged
+,nvl(fqty_billed ,0) as billed_qty
+,nvl(fweight_billed  ,0) as billed_weight
+,nvl(fbasis ,0) as basis
+,nvl(fgl ,"NA") as charge_code
+,nvl(ren_pd ,0) as ren_pd
+,nvl(fbilledby ,"NA") as unit_of_measurement
 ,cast(null as string) as currencyisocode
-,lin_survivor_customer_name__c
-,billingstreet
-,billingcity
-,billingstate
-,billingpostalcode
-,billingcountry
-,phone
-,fax
-,accountnumber
-,website
+,nvl(lin_survivor_customer_name__c ,"NA") as lin_survivor_customer_name__c
+,nvl(billingstreet ,"NA") as billingstreet
+,nvl(billingcity ,"NA") as billingcity
+,nvl(billingstate ,"NA") as billingstate
+,nvl(billingpostalcode ,"NA") as billingpostalcode
+,nvl(billingcountry ,"NA") as billingcountry
+,nvl(phone ,"NA") as phone 
+,nvl(fax ,"NA") as fax
+,nvl(accountnumber ,"NA") as accountnumber
+,nvl(website ,"NA") as website
 from
 mrs_cust_xref""")
 
 val commonPricingStageDf2 = sqlContext.sql("""select distinct
 lin_source_system_name__c
-,lin_customer_enterprise_id__c
-,lin_workday_cost_center__c
-,lin_workday_location_id__c
-,cast(lin_consolidated_charge_code__c as string)
-,lin_consolidated_charge_name__c
-,wh_id as facility_id
-,nvl(customer_code,"null") as customer_id
-,lot_number
-,cast(invoice_id as string) as invoice
-,generated_date as invoice_date
-,charge_amount as total_invoiced_amount
-,rate as rate_charged
-,report_qty as billed_qty
-,report_weight as billed_weight
-,weight_increment as basis
-,chargeback_code as charge_code
-,hj_ren_pd as ren_pd
-,uom as unit_of_measurement
-,cast(null as string) as currencyisocode
-,lin_survivor_customer_name__c
-,billingstreet
-,billingcity
-,billingstate
-,billingpostalcode
-,billingcountry
-,phone
-,fax
-,accountnumber
-,website
+,nvl(lin_customer_enterprise_id__c , "NA" ) as lin_customer_enterprise_id__c
+,nvl(lin_workday_cost_center__c , "NA" ) as lin_workday_cost_center__c
+,nvl(lin_workday_location_id__c , "NA" ) as lin_workday_location_id__c
+,nvl(cast(lin_consolidated_charge_code__c as string),"NA") as lin_consolidated_charge_code__c
+,nvl(lin_consolidated_charge_name__c , "NA" ) 
+,nvl(wh_id  , "NA" ) as facility_id
+,nvl(customer_code,"NA") as customer_id
+,nvl(lot_number , "NA" ) as lot_number
+,nvl(cast(invoice_id as string),"NA") as invoice
+,nvl(generated_date  , "NA" ) as invoice_date
+,nvl(charge_amount  , 0 ) as total_invoiced_amount
+,nvl(rate   , 0 ) as rate_charged
+,nvl(report_qty , 0 ) as billed_qty 
+,nvl(report_weight  , 0 ) as billed_weight
+,nvl(weight_increment , 0 ) as basis 
+,nvl(chargeback_code  , "NA" ) as charge_code
+,nvl(hj_ren_pd , 0 ) as ren_pd 
+,nvl(uom  , "NA" )as unit_of_measurement
+,"NA" as currencyisocode
+,nvl(lin_survivor_customer_name__c , "NA" ) as lin_survivor_customer_name__c
+,nvl(billingstreet , "NA" ) as billingstreet
+,nvl(billingcity , "NA" ) as billingcity
+,nvl(billingstate , "NA" ) as billingstate
+,nvl(billingpostalcode , "NA" ) as billingpostalcode
+,nvl(billingcountry , "NA" ) as billingcountry
+,nvl(phone , "NA" ) as phone
+,nvl(fax , "NA" ) as fax
+,nvl(accountnumber , "NA" ) as accountnumber
+,nvl(website , "NA" ) as website
 from
 hj_cust_xref""")
 
