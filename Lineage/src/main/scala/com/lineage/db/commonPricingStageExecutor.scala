@@ -257,7 +257,7 @@ lin_source_system_name__c
 ,nvl(fweight_billed  ,0) as billed_weight
 ,nvl(fbasis ,0) as basis
 ,nvl(fgl ,"NA") as charge_code
-,nvl(cast(ren_pd as string) ,0) as ren_pd
+,nvl(cast(ren_pd as string) ,"NA") as ren_pd
 ,nvl(fbilledby ,"NA") as unit_of_measurement
 ,nvl(cast(null as string),"NA") as currencyisocode
 ,nvl(lin_survivor_customer_name__c ,"NA") as lin_survivor_customer_name__c
@@ -291,7 +291,7 @@ lin_source_system_name__c
 ,nvl(report_weight  , 0 ) as billed_weight
 ,nvl(weight_increment , 0 ) as basis 
 ,nvl(chargeback_code  , "NA" ) as charge_code
-,nvl(cast(hj_ren_pd as string) , 0 ) as ren_pd 
+,nvl(cast(hj_ren_pd as string) , "NA" ) as ren_pd 
 ,nvl(uom  , "NA" )as unit_of_measurement
 ,nvl(cast(null as string),"NA") as currencyisocode
 ,nvl(lin_survivor_customer_name__c , "NA" ) as lin_survivor_customer_name__c
