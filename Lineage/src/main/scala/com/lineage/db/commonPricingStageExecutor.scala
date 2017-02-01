@@ -247,7 +247,7 @@ lin_source_system_name__c
 ,cast(lin_consolidated_charge_code__c as string)
 ,lin_consolidated_charge_name__c
 ,facilityid as facility_id
-,fcustcode as customer_id
+,nvl(fcustcode,"null") as customer_id
 ,flot as lot_number
 ,finvoice as invoice
 ,fdatestamp as invoice_date
@@ -281,7 +281,7 @@ lin_source_system_name__c
 ,cast(lin_consolidated_charge_code__c as string)
 ,lin_consolidated_charge_name__c
 ,wh_id as facility_id
-,customer_code as customer_id
+,nvl(customer_code,"null") as customer_id
 ,lot_number
 ,cast(invoice_id as string) as invoice
 ,generated_date as invoice_date
