@@ -32,7 +32,7 @@ object commonPricingStageExecutor {
 					prop.setProperty("password",password)
   
 					val mrsStagingDf = sqlContext.sql("""select distinct nvl((case when a.facilityid like '0%' then cast(cast(a.facilityid as int) as string) else cast(a.facilityid as string) end),cast('' as string)) facilityid 
-,nvl((case when a.fcustcode like '0%' then cast(cast(a.fcustcode as int) as string) else cast(a.fcustcode as string) end),"NA") fcustcode 
+,nvl((case when a.fcustcode like '0%' then cast(cast(a.fcustcode as int) as string) else cast(a.fcustcode as string) end),cast('NA' as string)) fcustcode 
 ,c.flot 
 ,d.finvoice 
 ,a.fdatestamp 
