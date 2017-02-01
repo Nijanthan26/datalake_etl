@@ -247,7 +247,7 @@ lin_source_system_name__c
 ,nvl(cast(lin_consolidated_charge_code__c as string) , "NA") as lin_consolidated_charge_code__c
 ,nvl(lin_consolidated_charge_name__c ,"NA") as lin_consolidated_charge_name__c
 ,nvl(facilityid ,"NA") as facility_id 
-,nvl(fcustcode,"NA") as customer_id
+,concat(nvl(fcustcode,"NA"),' ') as customer_id
 ,nvl(flot ,"NA") as lot_number
 ,nvl(finvoice ,"NA") as invoice
 ,nvl(fdatestamp ,"NA") as invoice_date
@@ -281,7 +281,7 @@ lin_source_system_name__c
 ,nvl(cast(lin_consolidated_charge_code__c as string),"NA") as lin_consolidated_charge_code__c
 ,nvl(lin_consolidated_charge_name__c , "NA" ) 
 ,nvl(wh_id  , "NA" ) as facility_id
-,nvl(customer_code,"NA") as customer_id
+,concat(nvl(customer_code,"NA"),' ') as customer_id
 ,nvl(lot_number , "NA" ) as lot_number
 ,nvl(cast(invoice_id as string),"NA") as invoice
 ,nvl(generated_date  , "NA" ) as invoice_date
@@ -311,16 +311,16 @@ hj_cust_xref""")
 
 //println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
 
-//commonPricingStageDf1.write.mode("append").jdbc(url, "go2", prop)
+commonPricingStageDf1.write.mode("append").jdbc(url, "go2", prop)
 
-commonPricingStageDf1.registerTempTable("commonPricingStage1")
-commonPricingStageDf2.registerTempTable("commonPricingStage2")
+//commonPricingStageDf1.registerTempTable("commonPricingStage1")
+//commonPricingStageDf2.registerTempTable("commonPricingStage2")
 
-sqlContext.sql("create table default.commonPricingStage1 as select * from commonPricingStage1")
-sqlContext.sql("create table default.commonPricingStage2 as select * from commonPricingStage2")
+//sqlContext.sql("create table default.commonPricingStage1 as select * from commonPricingStage1")
+//sqlContext.sql("create table default.commonPricingStage2 as select * from commonPricingStage2")
 //commonPricingStageDF.registerTempTable("common_pricing_stage")
 
-//commonPricingStageDf2.write.mode("append").jdbc(url, "go2", prop)
+commonPricingStageDf2.write.mode("append").jdbc(url, "go2", prop)
 
 	}
 	
