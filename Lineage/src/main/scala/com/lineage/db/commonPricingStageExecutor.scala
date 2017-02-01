@@ -238,7 +238,6 @@ ON (tab.LIN_ACCOUNT__C=acxref.id)""")
 
 hjCustRefDf.registerTempTable("hj_cust_xref")
 
-regexp_replace("foobar", "oo|ar", "")
 
 val commonPricingStageDf1 = sqlContext.sql("""select distinct
 lin_source_system_name__c  
