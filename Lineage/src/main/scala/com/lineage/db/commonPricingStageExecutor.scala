@@ -279,7 +279,7 @@ lin_source_system_name__c
 ,nvl(lin_workday_cost_center__c , "NA" ) as lin_workday_cost_center__c
 ,nvl(lin_workday_location_id__c , "NA" ) as lin_workday_location_id__c
 ,nvl(cast(lin_consolidated_charge_code__c as string),"NA") as lin_consolidated_charge_code__c
-,nvl(lin_consolidated_charge_name__c , "NA" ) 
+,nvl(lin_consolidated_charge_name__c , "NA" ) as lin_consolidated_charge_name__c
 ,nvl(wh_id  , "NA" ) as facility_id
 ,regexp_replace(nvl(customer_code,"NA"),"[\u0000-\u001f]", "00") as customer_id
 ,nvl(lot_number , "NA" ) as lot_number
