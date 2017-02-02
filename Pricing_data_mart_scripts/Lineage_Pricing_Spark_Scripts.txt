@@ -1,4 +1,6 @@
 
+--Only for Billing History Fact--
+
 spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
 drop table if exists antuit_pricing.mrs_staging"
 
@@ -25,8 +27,10 @@ facilityid string
 spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
 insert into antuit_pricing.mrs_staging
 select distinct
-a.facilityid 
-,a.fcustcode 
+nvl((case when a.facilityid like '0%' then cast(cast(a.facilityid as int) as string) else cast(a.facilityid as string) end),cast('' as string))
+--a.facilityid 
+,nvl((case when a.fcustcode like '0%' then cast(cast(a.fcustcode as int) as string) else cast(a.fcustcode as string) end),cast('' as string))
+--,a.fcustcode 
 ,c.flot 
 ,d.finvoice 
 ,a.fdatestamp 
@@ -80,7 +84,7 @@ c.fpricecode = e.fpricecode
 
 --HJ
 spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-drop table if exists hj_pre_staging_1"
+drop table if exists antuit_pricing.hj_pre_staging_1"
 
 spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
 create table antuit_pricing.hj_pre_staging_1
@@ -130,21 +134,17 @@ inner join antuit_stage.hj_t_bmm_contract_invoice_type k on (inv.contract_invoic
 inner join antuit_stage.hj_t_bmm_contract_master l on (k.contract_id = l.contract_id) 
 inner join antuit_stage.hj_t_bmm_customer m on (l.customer_id = m.customer_id)	
 inner join antuit_stage.hj_t_bmm_chargeback_type g on (f.chargeback_type_id = g.chargeback_type_id) 
-where g.chargeback_type='WMS Event'
+where lower(g.chargeback_type)='wms event'
 "	
 
-spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-drop table table antuit_pricing.hj_staging
-"
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar " drop table if exists antuit_pricing.hj_staging"
 
 spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-create table antuit_pricing.hj_staging as select distinct * from antuit_pricing.hj_pre_staging_1
-"	
+create table antuit_pricing.hj_staging as select distinct * from antuit_pricing.hj_pre_staging_1"	
 
 
 
-spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-drop table if exists hj_pre_staging_2"
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar " drop table if exists antuit_pricing.hj_pre_staging_2"
 
 
 spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
@@ -181,101 +181,210 @@ left join antuit_stage.hj_t_bmm_param_recurring pr on (citc.chargeback_id = pr.c
 left join antuit_stage.hj_t_bmm_param_manual_csr_prompt mcp on (citc.chargeback_id = mcp.chargeback_id)
 left join antuit_stage.hj_t_bmm_param_manual_prompt mp on (citc.chargeback_id = mp.chargeback_id)
 left join antuit_stage.hj_t_bmm_param_manual_adhoc ma on (citc.chargeback_id = ma.chargeback_id)
-where ct.chargeback_type <>'WMS Event'
+where lower(ct.chargeback_type) <>'wms event'
 "
 
 
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar " insert into antuit_pricing.hj_staging select * from antuit_pricing.hj_pre_staging_2"
+
+
+
+
+
+
+--MRS with cust xref
 spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-insert into antuit_pricing.hj_staging
-select * from antuit_pricing.hj_pre_staging_2
-"
-
-
-
---Consolidating HJ ans MRS
-spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-drop table if exists antuit_pricing.hj_mrs_staging"
-
-spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-create table antuit_pricing.hj_mrs_staging
-(
-facility_id string  
-,customer_id string  
-,lot_number string  
-,invoice string  
-,invoice_date string  
-,tot_invoice_amt double  
-,rate_charged double  
-,billed_qty double  
-,billed_weight double  
-,basis double  
-,charge_code string  
-,ren_pd double  
-,UOM string 
-,wms_system string
-)
-"
-
-spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-insert into antuit_pricing.hj_mrs_staging
-select distinct
-hj.wh_id   
-,hj.customer_code   
-,hj.lot_number   
-,hj.invoice_id   
-,hj.generated_date   
-,hj.charge_amount   
-,hj.rate   
-,hj.report_qty   
-,hj.report_weight   
-,hj.weight_increment   
-,hj.chargeback_code   
-,hj.ren_pd   
-,hj.uom   
---,hj.chargeback_type
-,'HIGHJUMP' as wms_system 
-from antuit_pricing.hj_staging hj
-"
-
-spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-insert into antuit_pricing.hj_mrs_staging
-select distinct
-mrs.facilityid   
-,mrs.fcustcode   
-,mrs.flot   
-,mrs.finvoice   
-,mrs.fdatestamp   
-,mrs.forigamt   
-,mrs.frate   
-,mrs.fqty_billed   
-,mrs.fweight_billed   
-,mrs.fbasis   
-,mrs.fgl   
-,mrs.ren_pd   
-,mrs.fbilledby 
-,'MRS' as wms_system 
-from antuit_pricing.mrs_staging mrs
-"
-
-
-
---this logic has to be changed.
-spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
-create table antuit_pricing.hjmrs_cust_xref
+create table antuit_pricing.mrs_cust_xref
 as
 select distinct
+select tab.*
+,acxref.NAME
+,acxref.BILLINGSTREET
+,acxref.BILLINGCITY
+,acxref.BILLINGSTATE
+,acxref.BILLINGPOSTALCODE
+,acxref.BILLINGCOUNTRY
+,acxref.PHONE
+,acxref.FAX
+,acxref.ACCOUNTNUMBER
+,acxref.WEBSITE 
+from
+(select distinct
 stg.*
-,concat((case when stg.wms_system ='HJ' then 'HIGHJUMP' else nvl(cast(stg.wms_system as string),cast('' as string)) end), 
-nvl((case when stg.customer_id like '0%' then cast(cast(stg.customer_id as int) as string) else cast(stg.customer_id as string) end),cast('' as string))) as UID_stg
-,xref.UID
+,concat('MRS',stg.facilityid, nvl(stg.fcustcode,cast('' as string))) as UID_stg
+--,xref.UID
+,'MRS' as LIN_SOURCE_SYSTEM_NAME__C
 ,xref.LIN_CUSTOMER_ENTERPRISE_ID__C
 ,xref.LIN_SURVIVOR_CUSTOMER_NAME__C
+,xref.LIN_ACCOUNT__C
+,chxref.LIN_CONSOLIDATED_CHARGE_CODE__C
+,chxref.LIN_CONSOLIDATED_CHARGE_NAME__C
+,costc.LIN_WORKDAY_COST_CENTER__C
+,costc.LIN_WORKDAY_LOCATION_ID__C
 from 
-antuit_pricing.hj_mrs_staging stg
-left join antuit_pricing.customer_xref xref
-on
-concat((case when stg.wms_system ='HJ' then 'HIGHJUMP' else nvl(cast(stg.wms_system as string),cast('' as string)) end), 
-nvl((case when stg.customer_id like '0%' then cast(cast(stg.customer_id as int) as string) else cast(stg.customer_id as string) end),cast('' as string)))
-= xref.UID"
+antuit_pricing.mrs_staging stg
+left join (select distinct uid,LIN_ACCOUNT__C,LIN_CUSTOMER_ENTERPRISE_ID__C,LIN_SURVIVOR_CUSTOMER_NAME__C,LIN_SOURCE_SYSTEM_NAME__C from antuit_pricing.customer_xref where LIN_SOURCE_SYSTEM_NAME__C ='MRS') xref
+on concat('MRS', nvl((case when stg.facilityid like '0%' then cast(cast(stg.facilityid as int) as string) else cast(stg.facilityid as string) end),cast('' as string)),
+nvl((case when stg.fcustcode like '0%' then cast(cast(stg.fcustcode as int) as string) else cast(stg.fcustcode as string) end),cast('' as string)))= xref.UID
+left join (select distinct uid,LIN_CONSOLIDATED_CHARGE_CODE__C,LIN_CONSOLIDATED_CHARGE_NAME__C from antuit_pricing.chargecode_xref) chxref
+on concat('MRS',nvl((case when stg.fgl like '0%' then cast(cast(stg.fgl as int) as string) else cast(stg.fgl as string) end),cast('' as string)))=chxref.uid
+left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref) costc
+on concat('MRS',nvl((case when stg.facilityid like '0%' then cast(cast(stg.facilityid as int) as string) else cast(stg.facilityid as string) end),cast('' as string)))=costc.uid
+) tab
+LEFT JOIN account_revised_xref ACXREF
+ON (tab.LIN_ACCOUNT__C=acxref.id)
+"
 
 
+--HJ with cust xref
+spark2-submit --class com.lineage.test  --master yarn simple-spark-scala_2.11-1.0.jar "
+create table antuit_pricing.hj_cust_xref
+as
+select distinct
+tab.*
+,acxref.NAME
+,acxref.BILLINGSTREET
+,acxref.BILLINGCITY
+,acxref.BILLINGSTATE
+,acxref.BILLINGPOSTALCODE
+,acxref.BILLINGCOUNTRY
+,acxref.PHONE
+,acxref.FAX
+,acxref.ACCOUNTNUMBER
+,acxref.WEBSITE 
+from
+(
+select distinct
+stg.*
+,concat('HIGHJUMP', nvl(stg.customer_code,cast('' as string))) as UID_stg
+,cast('HIGHJUMP' as string) as LIN_SOURCE_SYSTEM_NAME__C
+,xref.LIN_CUSTOMER_ENTERPRISE_ID__C
+,xref.LIN_SURVIVOR_CUSTOMER_NAME__C
+,xref.LIN_ACCOUNT__C
+,chxref.LIN_CONSOLIDATED_CHARGE_CODE__C
+,chxref.LIN_CONSOLIDATED_CHARGE_NAME__C
+,costc.LIN_WORKDAY_COST_CENTER__C
+,costc.LIN_WORKDAY_LOCATION_ID__C
+from 
+antuit_pricing.HJ_staging stg	
+left join (select distinct LIN_ACCOUNT__C,LIN_CUSTOMER_ENTERPRISE_ID__C,LIN_SURVIVOR_CUSTOMER_NAME__C,LIN_SOURCE_SYSTEM_NAME__C,LIN_LEGACY_CUSTOMER_CODE__C from antuit_pricing.customer_xref where LIN_SOURCE_SYSTEM_NAME__C ='HIGHJUMP') xref
+on (concat('HIGHJUMP', nvl(stg.customer_code,cast('' as string))))=(concat(nvl(xref.LIN_SOURCE_SYSTEM_NAME__C,cast('' as string)),nvl(xref.LIN_LEGACY_CUSTOMER_CODE__C,cast('' as string))))
+left join (select distinct uid,LIN_CONSOLIDATED_CHARGE_CODE__C,LIN_CONSOLIDATED_CHARGE_NAME__C from antuit_pricing.chargecode_xref) chxref
+on concat('HIGHJUMP',nvl((case when stg.chargeback_code like '0%' then cast(cast(stg.chargeback_code as int) as string) else cast(stg.chargeback_code as string) end),cast('' as string)))=chxref.uid
+left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref) costc
+on concat('HIGHJUMP',nvl((case when stg.wh_id like '0%' then cast(cast(stg.wh_id as int) as string) else cast(stg.wh_id as string) end),cast('' as string)))=costc.uid
+) tab
+LEFT JOIN account_revised_xref ACXREF
+ON (tab.LIN_ACCOUNT__C=acxref.id)
+"
+
+
+create table antuit_pricing.common_pricing_stage
+(
+LIN_SOURCE_SYSTEM_NAME__C string
+,lin_customer_enterprise_id__c string
+,lin_workday_cost_center__c string
+,lin_workday_location_id__c string
+,lin_consolidated_charge_code__c string
+,lin_consolidated_charge_name__c string
+,Facility_id string
+,Customer_Id string
+,Lot_Number string
+,Invoice string
+,Invoice_date string
+,Total_Invoiced_amount double
+,Rate_charged double
+,Billed_qty double
+,Billed_weight double
+,basis double
+,charge_code string
+,ren_pd double
+,Unit_of_measurement string
+,CURRENCYISOCODE string
+,lin_survivor_customer_name__c string
+,BILLINGSTREET string
+,BILLINGCITY string
+,BILLINGSTATE string
+,BILLINGPOSTALCODE string
+,BILLINGCOUNTRY string
+,PHONE string
+,FAX string
+,ACCOUNTNUMBER string
+,WEBSITE string
+)
+
+
+
+
+insert into common_pricing_stage
+select distinct
+lin_source_system_name__c
+,lin_customer_enterprise_id__c
+,lin_workday_cost_center__c
+,lin_workday_location_id__c
+,cast(lin_consolidated_charge_code__c as string)
+,lin_consolidated_charge_name__c
+,facilityid
+,fcustcode
+,flot
+,finvoice
+,fdatestamp
+,forigamt
+,frate
+,fqty_billed
+,fweight_billed
+,fbasis
+,fgl
+,ren_pd
+,fbilledby
+,cast(null as string)
+,lin_survivor_customer_name__c
+,BILLINGSTREET
+,BILLINGCITY
+,BILLINGSTATE
+,BILLINGPOSTALCODE
+,BILLINGCOUNTRY
+,PHONE
+,FAX
+,ACCOUNTNUMBER
+,WEBSITE 
+from
+antuit_pricing.mrs_cust_xref
+;
+
+
+insert into common_pricing_stage
+select distinct
+lin_source_system_name__c
+,lin_customer_enterprise_id__c
+,lin_workday_cost_center__c
+,lin_workday_location_id__c
+,cast(lin_consolidated_charge_code__c as string)
+,lin_consolidated_charge_name__c
+,wh_id
+,customer_code
+,lot_number
+,cast(invoice_id as string)
+,generated_date
+,charge_amount
+,rate
+,report_qty
+,report_weight
+,weight_increment
+,chargeback_code
+,ren_pd
+,uom
+,cast(null as string)
+,lin_survivor_customer_name__c
+,BILLINGSTREET
+,BILLINGCITY
+,BILLINGSTATE
+,BILLINGPOSTALCODE
+,BILLINGCOUNTRY
+,PHONE
+,FAX
+,ACCOUNTNUMBER
+,WEBSITE 
+from
+antuit_pricing.hj_cust_xref
+;
