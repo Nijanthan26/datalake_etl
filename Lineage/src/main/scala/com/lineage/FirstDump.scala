@@ -14,7 +14,7 @@ import org.apache.spark.sql.functions._
 
 object FirstDump {
   
-  def addDeltaFirstTimeNoArc(deltaDf: Dataset[Row]): Dataset[Row] = {
+  def addDeltaFirstTime(deltaDf: Dataset[Row]): Dataset[Row] = {
 			    val sparkSession = deltaDf.sparkSession
 					val deltaDfSha = RowHash.addHash(deltaDf)
 					val deduped = deltaDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
@@ -33,7 +33,7 @@ object FirstDump {
  
       //val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
       val LatestData = sqlContext.sql("select * from  "+args(1)) // Load latest data from impala
-      val res = addDeltaFirstTimeNoArc(LatestData)
+      val res = addDeltaFirstTime(LatestData)
       //res.show()
       res.registerTempTable("mytempTable")
       sqlContext.sql("drop table if exists antuit_stage."+args(0))
