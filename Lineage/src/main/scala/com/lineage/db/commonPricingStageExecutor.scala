@@ -36,7 +36,7 @@ nvl((case when matc.facilityid like '0%' then cast(cast(matc.facilityid as int) 
 ,nvl((case when matc.fcustcode like '0%' then cast(cast(matc.fcustcode as int) as string) else cast(matc.fcustcode as string) end),cast('' as string)) as fcustcode 
 ,matc.flot 
 ,matc.finvoice 
-,matc.fidate 
+,matc.fidate as fdatestamp
 ,matc.forigamt 
 ,matc.frate 
 ,matc.fqty as fqty_billed 
@@ -67,7 +67,7 @@ nvl((case when matc.facilityid like '0%' then cast(cast(matc.facilityid as int) 
 ,nvl((case when matc.fcustcode like '0%' then cast(cast(matc.fcustcode as int) as string) else cast(matc.fcustcode as string) end),cast('' as string)) as fcustcode 
 ,matc.flot 
 ,matc.finvoice 
-,matc.fidate 
+,matc.fidate as fdatestamp
 ,matc.forigamt 
 ,matc.frate 
 ,matc.fqty as fqty_billed 
