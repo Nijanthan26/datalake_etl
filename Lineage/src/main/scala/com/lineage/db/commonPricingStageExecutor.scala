@@ -199,7 +199,7 @@ stg.*
 ,costc.LIN_WORKDAY_COST_CENTER__C
 ,costc.LIN_WORKDAY_LOCATION_ID__C
 from 
-antuit_pricing.mrs_staging stg
+mrs_staging stg
 left join (select distinct uid,LIN_ACCOUNT__C,LIN_CUSTOMER_ENTERPRISE_ID__C,LIN_SURVIVOR_CUSTOMER_NAME__C,LIN_SOURCE_SYSTEM_NAME__C from antuit_pricing.customer_xref where LIN_SOURCE_SYSTEM_NAME__C ='MRS') xref
 on concat('MRS', nvl((case when stg.facilityid like '0%' then cast(cast(stg.facilityid as int) as string) else cast(stg.facilityid as string) end),cast('' as string)),
 nvl((case when stg.fcustcode like '0%' then cast(cast(stg.fcustcode as int) as string) else cast(stg.fcustcode as string) end),cast('' as string)))= xref.UID
@@ -240,7 +240,7 @@ stg.*
 ,costc.LIN_WORKDAY_COST_CENTER__C
 ,costc.LIN_WORKDAY_LOCATION_ID__C
 from 
-antuit_pricing.HJ_staging stg	
+hj_staging stg	
 left join (select distinct LIN_ACCOUNT__C,LIN_CUSTOMER_ENTERPRISE_ID__C,LIN_SURVIVOR_CUSTOMER_NAME__C,LIN_SOURCE_SYSTEM_NAME__C,LIN_LEGACY_CUSTOMER_CODE__C from antuit_pricing.customer_xref where LIN_SOURCE_SYSTEM_NAME__C ='HIGHJUMP') xref
 on (concat('HIGHJUMP', nvl(stg.customer_code,cast('' as string))))=(concat(nvl(xref.LIN_SOURCE_SYSTEM_NAME__C,cast('' as string)),nvl(xref.LIN_LEGACY_CUSTOMER_CODE__C,cast('' as string))))
 left join (select distinct uid,LIN_CONSOLIDATED_CHARGE_CODE__C,LIN_CONSOLIDATED_CHARGE_NAME__C,lin_legacy_charge_code__c from antuit_pricing.chargecode_xref where lin_legacy_system__c='HIGHJUMP') chxref
