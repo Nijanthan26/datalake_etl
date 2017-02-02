@@ -63,8 +63,8 @@ object test {
 									res.registerTempTable("mytempTable")
 
 
-									sqlContext.sql("drop table if exists antuit_stage."+args(0))
-									sqlContext.sql("create table antuit_stage."+args(0)+" as select * from mytempTable");
+									sqlContext.sql("drop table if exists "+args(0))
+									sqlContext.sql("create table "+args(0)+" as select * from mytempTable");
 
 						}
 						else
