@@ -56,7 +56,7 @@ object test {
 									val deltaTableTx = "acl_tx_"+table.substring(4)
 
 									val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
-									val dfDeltatx = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+									val dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 
 
 									val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
