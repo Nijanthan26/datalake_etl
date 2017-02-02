@@ -70,7 +70,7 @@ object test {
 						else
 						{
 
-						  println("exitting..........................")
+						  println("exitting.......................... " + table)
 
 						}
 			
