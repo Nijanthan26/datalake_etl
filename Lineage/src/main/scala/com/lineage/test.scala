@@ -46,8 +46,7 @@ object test {
 									val table = deltaTable.substring(deltaTable.indexOf("."))
 									val db = deltaTable.substring(0,deltaTable.indexOf("."))
 
-					if(dfDelta.count >0)
-					{
+				
 
 						if(table.startsWith("acl_")){
 
@@ -73,10 +72,7 @@ object test {
 
 
 						}
-					}
-					else{
-						System.exit(0)
-					}
+			
 			//sc.close()
 	}
 }
