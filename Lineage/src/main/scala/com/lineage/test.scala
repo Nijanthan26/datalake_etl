@@ -52,8 +52,8 @@ object test {
 
 
 
-									val deltaTableCci = "acl_cci_"+table.substring(5)
-									val deltaTableTx = "acl_tx_"+table.substring(5)
+									val deltaTableCci = "acl_cci_"+table.substring(4)
+									val deltaTableTx = "acl_tx_"+table.substring(4)
 
 									val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
 									val dfDeltatx = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
