@@ -47,7 +47,7 @@ object pricingMart1 {
 
 				//	res1.write.jdbc(url, "test3", prop)
 					
-val chargeDimDf = sqlContext.sql("""select distinct
+/*val chargeDimDf = sqlContext.sql("""select distinct
 cast(lin_consolidated_charge_code__c as string) as normalised_charge_code
 ,lin_consolidated_charge_name__c as normalised_charge_name
 ,concat('billhist_',CURRENT_TIMESTAMP) as updated_date
@@ -55,15 +55,15 @@ from
 antuit_pricing.chargecode_xref""")
 
 chargeDimDf.write.jdbc(url, "temp_delete", prop)
-
-/*val costCenterDimDf = sqlContext.sql("""select distinct
+*/
+val costCenterDimDf = sqlContext.sql("""select distinct
 lin_workday_cost_center__c as cost_center
 ,lin_workday_location_id__c as workday_location
 from 
 antuit_pricing.costcenter_xref""")
 
 costCenterDimDf.write.jdbc(url, "cost_center_dim_test", prop)
-
+/*
 val customerDimDf = sqlContext.sql("""select distinct
 lin_customer_enterprise_id__c AS enterprise_id
 ,lin_survivor_customer_name__c as normalised_client_name
