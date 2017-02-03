@@ -58,6 +58,9 @@ object DeltaAdd {
 
 					if(table.startsWith("acl_")){
 
+					  
+					  println("..................................................................................................................."+table+db)
+					  
 						val deltaTableCci = "acl_cci_"+table.substring(4)
 						val deltaTableTx = "acl_tx_"+table.substring(4)
 
