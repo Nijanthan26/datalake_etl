@@ -18,10 +18,24 @@ object commonPricingStageExecutor {
   
   
 	def main(args: Array[String]): Unit = {
-			    val conf = new SparkConf().setAppName("sqlrun")
+	  
+	    		val cal = Calendar.getInstance()
+          val Date =cal.get(Calendar.DATE )
+          val Month1 =cal.get(Calendar.MONTH )
+          val Month = Month1+1
+         /* val Hour = cal.get(Calendar.HOUR_OF_DAY)
+          val min = cal.get(Calendar.MINUTE)
+          val second = cal.get(Calendar.SECOND) 
+          */
+          val Year = cal.get(Calendar.YEAR)
+          val timeStamp = Date+"-"+Month+"-"+Year
+          
+			    val conf = new SparkConf().setAppName("billHist"+timeStamp)
 					val sc = new SparkContext(conf)
-					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+		      val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 					import sqlContext.implicits._
+					
+
 					
 					val url = "jdbc:postgresql://metricsone.cpslmao02wkq.us-west-2.rds.amazonaws.com:5432/postgres"
 					val username = "root"
@@ -285,6 +299,7 @@ lin_source_system_name__c
 ,nvl(fax ,"NA") as fax
 ,nvl(accountnumber ,"NA") as accountnumber
 ,nvl(website ,"NA") as website
+,concat('billhist_',CURRENT_TIMESTAMP) as updated_date 
 from
 mrs_cust_xref""")
 
@@ -319,6 +334,7 @@ lin_source_system_name__c
 ,nvl(fax , "NA" ) as fax
 ,nvl(accountnumber , "NA" ) as accountnumber
 ,nvl(website , "NA" ) as website
+,concat('billhist_',CURRENT_TIMESTAMP) as updated_date 
 from
 hj_cust_xref""")
 

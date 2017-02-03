@@ -15,7 +15,18 @@ object pricingMart1 {
 
 
 	def main(args: Array[String]): Unit = {
-			    val conf = new SparkConf().setAppName("sqlrun")
+	  
+	  	    		val cal = Calendar.getInstance()
+          val Date =cal.get(Calendar.DATE )
+          val Month1 =cal.get(Calendar.MONTH )
+          val Month = Month1+1
+         /* val Hour = cal.get(Calendar.HOUR_OF_DAY)
+          val min = cal.get(Calendar.MINUTE)
+          val second = cal.get(Calendar.SECOND) 
+          */
+          val Year = cal.get(Calendar.YEAR)
+          val timeStamp = Date+"-"+Month+"-"+Year
+			    val conf = new SparkConf().setAppName("billHist"+timeStamp)
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 					import sqlContext.implicits._
@@ -38,12 +49,13 @@ object pricingMart1 {
 val chargeDimDf = sqlContext.sql("""select distinct
 cast(lin_consolidated_charge_code__c as string) as normalised_charge_code
 ,lin_consolidated_charge_name__c as normalised_charge_name
+,concat('billhist_',CURRENT_TIMESTAMP) as updated_date
 from 
 antuit_pricing.chargecode_xref""")
 
-chargeDimDf.write.jdbc(url, "charge_dim_test", prop)
+chargeDimDf.write.jdbc(url, "temp_delete", prop)
 
-val costCenterDimDf = sqlContext.sql("""select distinct
+/*val costCenterDimDf = sqlContext.sql("""select distinct
 lin_workday_cost_center__c as cost_center
 ,lin_workday_location_id__c as workday_location
 from 
@@ -61,7 +73,7 @@ customerDimDf.write.jdbc(url, "customer_dim_test", prop)
 					
 
 					//res1.write.mode("append").jdbc(url, "test3", prop)
-
+*/
 
 	}
 
