@@ -270,14 +270,14 @@ hjCustRefDf.registerTempTable("hj_cust_xref")
 
 
 val commonPricingStageDf1 = sqlContext.sql("""select
-lin_source_system_name__c  
-,nvl(lin_customer_enterprise_id__c ,"NA") as lin_customer_enterprise_id__c
-,nvl(lin_workday_cost_center__c ,"NA") as lin_workday_cost_center__c
-,nvl(lin_workday_location_id__c ,"NA") as lin_workday_location_id__c
-,nvl(cast(lin_consolidated_charge_code__c as string) , "NA") as lin_consolidated_charge_code__c
-,nvl(lin_consolidated_charge_name__c ,"NA") as lin_consolidated_charge_name__c
-,nvl(facilityid ,"NA") as facility_id 
-,regexp_replace(nvl(fcustcode,"NA"),"[\u0000-\u001f]", "NA") as customer_id
+lin_source_system_name__c  as source_system
+,nvl(lin_customer_enterprise_id__c ,"NA") as enterprise_id          
+,nvl(lin_workday_cost_center__c ,"NA") as cost_center
+,nvl(lin_workday_location_id__c ,"NA") as workday_location       
+,nvl(cast(lin_consolidated_charge_code__c as string) , "NA") as normalised_charge_code 
+,nvl(lin_consolidated_charge_name__c ,"NA") as normalised_charge_name 
+,nvl(facilityid ,"NA") as legacy_warehouse_id     
+,regexp_replace(nvl(fcustcode,"NA"),"[\u0000-\u001f]", "NA") as legacy_customer_code   
 ,nvl(flot ,"NA") as lot_number
 ,nvl(finvoice ,"NA") as invoice
 ,nvl(fdatestamp ,"NA") as invoice_date
@@ -286,11 +286,11 @@ lin_source_system_name__c
 ,nvl(fqty_billed ,0) as billed_qty
 ,nvl(fweight_billed  ,0) as billed_weight
 ,nvl(fbasis ,0) as basis
-,nvl(fgl ,"NA") as charge_code
+,nvl(fgl ,"NA") as legacy_charge_code
 ,nvl(cast(ren_pd as string) ,"NA") as ren_pd
 ,nvl(fbilledby ,"NA") as unit_of_measurement
-,nvl(currencyisocode,"NA") as currencyisocode
-,nvl(lin_survivor_customer_name__c ,"NA") as lin_survivor_customer_name__c
+,nvl(currencyisocode,"NA") as currency_code
+,nvl(lin_survivor_customer_name__c ,"NA") as customer_name
 ,nvl(billingstreet ,"NA") as billingstreet
 ,nvl(billingcity ,"NA") as billingcity
 ,nvl(billingstate ,"NA") as billingstate
@@ -305,14 +305,14 @@ from
 mrs_cust_xref""")
 
 val commonPricingStageDf2 = sqlContext.sql("""select
-lin_source_system_name__c
-,nvl(lin_customer_enterprise_id__c , "NA" ) as lin_customer_enterprise_id__c
-,nvl(lin_workday_cost_center__c , "NA" ) as lin_workday_cost_center__c
-,nvl(lin_workday_location_id__c , "NA" ) as lin_workday_location_id__c
-,nvl(cast(lin_consolidated_charge_code__c as string),"NA") as lin_consolidated_charge_code__c
-,nvl(lin_consolidated_charge_name__c , "NA" ) as lin_consolidated_charge_name__c
-,nvl(wh_id  , "NA" ) as facility_id
-,regexp_replace(nvl(customer_code,"NA"),"[\u0000-\u001f]", "NA") as customer_id
+lin_source_system_name__c as source_system
+,nvl(lin_customer_enterprise_id__c , "NA" ) as enterprise_id
+,nvl(lin_workday_cost_center__c , "NA" ) as cost_center
+,nvl(lin_workday_location_id__c , "NA" ) as workday_location
+,nvl(cast(lin_consolidated_charge_code__c as string),"NA") as normalised_charge_code
+,nvl(lin_consolidated_charge_name__c , "NA" ) as normalised_charge_name 
+,nvl(wh_id  , "NA" ) as legacy_warehouse_id
+,regexp_replace(nvl(customer_code,"NA"),"[\u0000-\u001f]", "NA") as legacy_customer_code
 ,nvl(lot_number , "NA" ) as lot_number
 ,nvl(cast(invoice_id as string),"NA") as invoice
 ,nvl(generated_date  , "NA" ) as invoice_date
@@ -321,11 +321,11 @@ lin_source_system_name__c
 ,nvl(report_qty , 0 ) as billed_qty 
 ,nvl(report_weight  , 0 ) as billed_weight
 ,nvl(weight_increment , 0 ) as basis 
-,nvl(chargeback_code  , "NA" ) as charge_code
+,nvl(chargeback_code  , "NA" ) as legacy_charge_code
 ,nvl(cast(hj_ren_pd as string) , "NA" ) as ren_pd 
 ,nvl(uom  , "NA" )as unit_of_measurement
-,nvl(currencyisocode,"NA") as currencyisocode
-,nvl(lin_survivor_customer_name__c , "NA" ) as lin_survivor_customer_name__c
+,nvl(currencyisocode,"NA") as currency_code
+,nvl(lin_survivor_customer_name__c , "NA" ) as customer_name
 ,nvl(billingstreet , "NA" ) as billingstreet
 ,nvl(billingcity , "NA" ) as billingcity
 ,nvl(billingstate , "NA" ) as billingstate
