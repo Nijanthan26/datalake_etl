@@ -54,7 +54,7 @@ object FirstDump {
 					val antuitStageTablename = args(0)
 					val deltaTable = args(1)
 					
-					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)  
+					  
 
 					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
 					val db = deltaTable.substring(0,deltaTable.indexOf("."))
@@ -63,6 +63,7 @@ object FirstDump {
 
 					if(table.startsWith("acl_")){
 
+					  println("........................###################################################...............................")
 						val deltaTableCci = "acl_cci_"+table.substring(4)
 						val deltaTableTx = "acl_tx_"+table.substring(4)
 
@@ -86,13 +87,13 @@ object FirstDump {
 							val res = addDeltaFirstTime(LatestData)
 
 							res.registerTempTable("mytempTable")
-							sqlContext.sql("drop table if exists antuit_stage."+antuitStageTablename)
-							sqlContext.sql("create table antuit_stage."+antuitStageTablename+" as select * from mytempTable");
+							sqlContext.sql("drop table if exists "+antuitStageTablename)
+							sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
 						
 
 					}
 
-
+/usr/bin/spark2-submit --class com.lineage.FirstDump --master yarn  /home/vinuta/DBExportBranch/datalake_etl/Lineage/target/scala-2.11/lineage-datalake-spark-scala_2.11-1.0.jar antuit_stage.acl_m_info_flow_prof_d aclsqoopdailydelta.acl_m_info_flow_prof_dsqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)
 			// sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0)) 
 	}
 }
