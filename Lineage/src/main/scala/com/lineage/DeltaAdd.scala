@@ -41,7 +41,7 @@ object DeltaAdd {
 					val antuitStageTablename = args(0)
 					val deltaTable = args(1)
 
-					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)  
+					  
 
 					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
 					val db = deltaTable.substring(0,deltaTable.indexOf("."))
@@ -107,5 +107,7 @@ object DeltaAdd {
 								}
 						//sc.close()
 					}  
+			
+			sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)
 	}
 }
