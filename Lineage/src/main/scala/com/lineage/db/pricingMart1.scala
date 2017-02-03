@@ -17,7 +17,7 @@ object pricingMart1 {
 
 	def main(args: Array[String]): Unit = {
 	  
-	  	    		val cal = Calendar.getInstance()
+	  	    val cal = Calendar.getInstance()
           val Date =cal.get(Calendar.DATE )
           val Month1 =cal.get(Calendar.MONTH )
           val Month = Month1+1
