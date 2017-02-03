@@ -361,7 +361,6 @@ antuit_pricing.customer_xref""")
 
 customerDimDf.write.jdbc(url, "customer_dim_test", prop)
 
-
 	}
 	
 }
