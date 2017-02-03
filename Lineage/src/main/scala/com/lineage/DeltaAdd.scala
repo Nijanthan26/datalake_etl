@@ -13,13 +13,13 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 
 object DeltaAdd {
-  
-def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-			    val initialDfSha = initialDfShaWithDate//.drop("archive_date")
+
+	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
+			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
-					
+
 					val  delta = deltaDf
-        	val deltaDfSha = RowHash.addHash(delta)
+					val deltaDfSha = RowHash.addHash(delta)
 					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.createOrReplaceTempView("deltaDfSha")
@@ -27,42 +27,82 @@ def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row
 					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
 					val deduped = initialDfShaWithDate.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
 					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
-					    
+
 	}
 
 
-    def main(args: Array[String]): Unit = {
-        val conf = new SparkConf().setAppName("DeltaAdd")
-        val sc = new SparkContext(conf)
-        val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-        import sqlContext.implicits._
-        
-        sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0))  
-       
-        val dfProc = sqlContext.sql("select * from "+args(0)) //load the Previously Processes table  from Data Lake
-        val dfDelta = sqlContext.sql("select * from  "+args(1)) // Load the delta data from Impala
-        if(dfDelta.count >0)
-        {
-        val res = addDeltaIncremental(dfProc, dfDelta )
-        val cal = Calendar.getInstance()
-        val Date =cal.get(Calendar.DATE )
-        val Month1 =cal.get(Calendar.MONTH )
-        val Month = Month1+1
-        val Hour = cal.get(Calendar.HOUR_OF_DAY)
-        val min = cal.get(Calendar.MINUTE)
-        val second = cal.get(Calendar.SECOND)
-        
-        res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
-        //res.show()
-        sqlContext.sql("create table "+args(0)+"_merge like "+ args(0))
-        sqlContext.sql("drop table if exists "+args(0))
-        sqlContext.sql("create table "+args(0)+" like "+ args(0)+"_merge")
-        sqlContext.sql("ALTER TABLE "+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
-        sqlContext.sql("drop table if exists  "+args(0)+"_merge")
-    }
-      else{
-       System.exit(0)
-      }
-       //sc.close()
-      }
+	def main(args: Array[String]): Unit = {
+			val conf = new SparkConf().setAppName("DeltaAdd")
+					val sc = new SparkContext(conf)
+					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+
+					import sqlContext.implicits._
+
+					val antuitStageTablename = args(0)
+					val deltaTable = args(1)
+
+					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)  
+
+					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
+					val db = deltaTable.substring(0,deltaTable.indexOf("."))
+
+					val cal = Calendar.getInstance()
+					val Date =cal.get(Calendar.DATE )
+					val Month1 =cal.get(Calendar.MONTH )
+					val Month = Month1+1
+					val Hour = cal.get(Calendar.HOUR_OF_DAY)
+					val min = cal.get(Calendar.MINUTE)
+					val second = cal.get(Calendar.SECOND)
+
+					val dfProc = sqlContext.sql("select * from "+antuitStageTablename)
+
+					if(table.startsWith("acl_")){
+
+						val deltaTableCci = "acl_cci_"+table.substring(4)
+						val deltaTableTx = "acl_tx_"+table.substring(4)
+
+						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
+						val dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+
+
+						val dfDelta = dfDeltacci.unionAll(dfDeltatx)
+						if(dfDelta.count >0)
+						{
+							val res = addDeltaIncremental(dfProc, dfDelta )
+
+									res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
+									sqlContext.sql("create table "+antuitStageTablename+"_merge like "+ antuitStageTablename)
+									sqlContext.sql("drop table if exists "+antuitStageTablename)
+									sqlContext.sql("create table "+antuitStageTablename+" like "+ antuitStageTablename+"_merge")
+									sqlContext.sql("ALTER TABLE "+antuitStageTablename +" set location \'/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
+									sqlContext.sql("drop table if exists  "+antuitStageTablename+"_merge")
+						}
+						else{
+							System.exit(0)
+						}
+
+
+					}
+					else
+					{
+						//load the Previously Processes table  from Data Lake
+						val dfDelta = sqlContext.sql("select * from  "+deltaTable) // Load the delta data from Impala
+
+								if(dfDelta.count >0)
+								{
+									val res = addDeltaIncremental(dfProc, dfDelta )
+
+											res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
+											sqlContext.sql("create table "+antuitStageTablename+"_merge like "+ antuitStageTablename)
+											sqlContext.sql("drop table if exists "+antuitStageTablename)
+											sqlContext.sql("create table "+antuitStageTablename+" like "+ antuitStageTablename+"_merge")
+											sqlContext.sql("ALTER TABLE "+antuitStageTablename +" set location \'/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
+											sqlContext.sql("drop table if exists  "+antuitStageTablename+"_merge")
+								}
+								else{
+									System.exit(0)
+								}
+						//sc.close()
+					}  
+	}
 }
