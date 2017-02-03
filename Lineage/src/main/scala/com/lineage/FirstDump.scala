@@ -93,7 +93,7 @@ object FirstDump {
 
 					}
 
-/usr/bin/spark2-submit --class com.lineage.FirstDump --master yarn  /home/vinuta/DBExportBranch/datalake_etl/Lineage/target/scala-2.11/lineage-datalake-spark-scala_2.11-1.0.jar antuit_stage.acl_m_info_flow_prof_d aclsqoopdailydelta.acl_m_info_flow_prof_dsqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)
+sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)
 			// sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0)) 
 	}
 }
