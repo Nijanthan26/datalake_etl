@@ -34,9 +34,13 @@ object FirstDump {
 					val cciDfSha = RowHash.addHash(cciDf)
 					val txDfSha = RowHash.addHash(txDf)
 
+					println(".........................................................................................."+cciDfSha.count)
+					println(".........................................................................................."+txDfSha.count)
+					
 					val deduped = cciDfSha.union(txDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
 					val dedupedDf = sparkSession.createDataFrame(deduped, cciDfSha.schema) 
 
+					
 							dedupedDf.createOrReplaceTempView("deduped")
 
 							import org.apache.spark.sql.functions._ 
@@ -63,18 +67,23 @@ object FirstDump {
 
 					if(table.startsWith("acl_")){
 
-					  println("........................###################################################...............................")
+					
 						val deltaTableCci = "acl_cci_"+table.substring(4)
 						val deltaTableTx = "acl_tx_"+table.substring(4)
 
 						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
 						val dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 
+						
 
+					  println("........................###################################################..............................."+dfDeltacci.count)
+					  println("........................###################################################..............................."+dfDeltatx.count)
+					    
 						val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
 						res.registerTempTable("mytempTable")
 
-
+  println("........................###################################################..............................."+res.count)
+						
 						sqlContext.sql("drop table if exists "+antuitStageTablename)
 						sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
 
@@ -87,6 +96,10 @@ object FirstDump {
 							val res = addDeltaFirstTime(LatestData)
 
 							res.registerTempTable("mytempTable")
+							
+														
+							
+							
 							sqlContext.sql("drop table if exists "+antuitStageTablename)
 							sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
 						
