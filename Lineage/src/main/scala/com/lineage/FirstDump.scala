@@ -84,8 +84,8 @@ object FirstDump {
 
   println("........................###################################################..............................."+res.count)
 						
-						sqlContext.sql("drop table if exists "+antuitStageTablename)
-						sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
+					//	sqlContext.sql("drop table if exists "+antuitStageTablename)
+					//	sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
 
 					}
 					else
