@@ -36,11 +36,11 @@ object FirstDump {
 
 					println(".........................................................................................."+cciDfSha.count)
 					println(".........................................................................................."+txDfSha.count)
-					
+
 					val deduped = cciDfSha.union(txDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
 					val dedupedDf = sparkSession.createDataFrame(deduped, cciDfSha.schema) 
 
-					
+
 							dedupedDf.createOrReplaceTempView("deduped")
 
 							import org.apache.spark.sql.functions._ 
@@ -57,8 +57,8 @@ object FirstDump {
 
 					val antuitStageTablename = args(0)
 					val deltaTable = args(1)
-					
-					  
+
+
 
 					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
 					val db = deltaTable.substring(0,deltaTable.indexOf("."))
@@ -67,23 +67,44 @@ object FirstDump {
 
 					if(table.startsWith("acl_")){
 
-					
+
 						val deltaTableCci = "acl_cci_"+table.substring(4)
 						val deltaTableTx = "acl_tx_"+table.substring(4)
 
+						val dfDeltatxT = sqlContext.sql("select * from  "+db+"."+deltaTableTx +"  limit 1")
+						val deltaTableCciT = sqlContext.sql("select * from  "+db+"."+deltaTableCci +"  limit 1") // Load the delta data from Impala
+
+						val dfDeltacciCol = deltaTableCciT.columns
+						val dfDeltatxCol = dfDeltatxT.columns
+
+
 						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
-						val dfDeltatx = sqlContext.sql("select \"NA\" as id, tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 
-						
+						if(dfDeltacciCol.sameElements(dfDeltatxCol))
+						{
+							println("...............................................................")
+							val dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+							val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
+							res.registerTempTable("mytempTable")
+						}else
+						{
+							var  selectQuerytx= "select "
+									for(i <- 0 until (dfDeltacciCol.length)){
+										if(dfDeltatxCol contains dfDeltacciCol(i))
+										{
+											selectQuerytx = selectQuerytx +" "+dfDeltacciCol(i)+","
+										}else{
+											selectQuerytx = selectQuerytx +"  null as "+dfDeltacciCol(i)+","
+										}
 
-					  println("........................###################################################..............................."+dfDeltacci.count)
-					  println("........................###################################################..............................."+dfDeltatx.count)
-					    
-						val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
-						res.registerTempTable("mytempTable")
+									}
+							selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
+									val dfDeltatx = sqlContext.sql(selectQuerytx)
+									val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
+									//dfDeltatx.show()
+									res.registerTempTable("mytempTable")
+						}
 
-  println("........................###################################################..............................."+res.count)
-						
 						sqlContext.sql("drop table if exists "+antuitStageTablename)
 						sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
 
@@ -92,21 +113,21 @@ object FirstDump {
 					{
 
 						//val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
-						  val LatestData = sqlContext.sql("select * from  "+deltaTable) // Load latest data from impala
-							val res = addDeltaFirstTime(LatestData)
+						val LatestData = sqlContext.sql("select * from  "+deltaTable) // Load latest data from impala
+								val res = addDeltaFirstTime(LatestData)
 
-							res.registerTempTable("mytempTable")
-							
-														
-							
-							
-							sqlContext.sql("drop table if exists "+antuitStageTablename)
-							sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
-						
+								res.registerTempTable("mytempTable")
+
+
+
+
+								sqlContext.sql("drop table if exists "+antuitStageTablename)
+								sqlContext.sql("create table "+antuitStageTablename+" as select * from mytempTable");
+
 
 					}
 
-sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)
+			sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)
 			// sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0)) 
 	}
 }
