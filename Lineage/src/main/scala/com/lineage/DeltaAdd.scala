@@ -40,11 +40,11 @@ object DeltaAdd {
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 
-					
+
 
 					val antuitStageTablename = args(0)
 					val deltaTable = args(1)
-import sqlContext.implicits._
+					import sqlContext.implicits._
 					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)  
 
 					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
@@ -71,15 +71,16 @@ import sqlContext.implicits._
 						val dfDeltatxT = sqlContext.sql("select * from  "+db+"."+deltaTableTx +"  limit 1")
 						val deltaTableCciT = sqlContext.sql("select * from  "+db+"."+deltaTableCci +"  limit 1") // Load the delta data from Impala
 
-						
+						val dfDeltacciCol = deltaTableCciT.columns
+						val dfDeltatxCol = dfDeltatxT.columns
+
 						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
 
-import org.apache.spark.sql.types._
+						import org.apache.spark.sql.types._
 						val schema = StructType(dfDeltacci.schema.fields)
 						var dfDeltatx = sqlContext.createDataFrame(sc.emptyRDD[Row],schema )
 
-import sqlContext.implicits._
-						if(deltaTableCciT.sameElements(dfDeltatxT))
+						if(dfDeltacciCol.sameElements(dfDeltatxCol))
 						{
 							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 						}else
@@ -94,7 +95,7 @@ import sqlContext.implicits._
 										}
 									}
 							selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
-							dfDeltatx = sqlContext.sql(selectQuerytx)
+									dfDeltatx = sqlContext.sql(selectQuerytx)
 						}
 
 
