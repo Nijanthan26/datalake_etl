@@ -11,7 +11,7 @@ import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.types._
+
 
 object DeltaAdd {
 
@@ -67,7 +67,7 @@ object DeltaAdd {
 
 						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
 
-
+import org.apache.spark.sql.types._
 						val schema = StructType(dfDeltacci.schema.fields)
 						var dfDeltatx = spark.createDataFrame(sc.emptyRDD[Row],schema )
 
