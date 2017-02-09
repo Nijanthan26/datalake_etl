@@ -65,6 +65,10 @@ object DeltaAdd {
 						val deltaTableCci = "acl_cci_"+table.substring(4)
 						val deltaTableTx = "acl_tx_"+table.substring(4)
 
+						val dfDeltatxT = sqlContext.sql("select * from  "+db+"."+deltaTableTx +"  limit 1")
+						val deltaTableCciT = sqlContext.sql("select * from  "+db+"."+deltaTableCci +"  limit 1") // Load the delta data from Impala
+
+						
 						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
 
 import org.apache.spark.sql.types._
@@ -72,7 +76,7 @@ import org.apache.spark.sql.types._
 						var dfDeltatx = sqlContext.createDataFrame(sc.emptyRDD[Row],schema )
 
 
-						if(dfDeltacciCol.sameElements(dfDeltatxCol))
+						if(deltaTableCciT.sameElements(dfDeltatxT))
 						{
 							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 						}else
