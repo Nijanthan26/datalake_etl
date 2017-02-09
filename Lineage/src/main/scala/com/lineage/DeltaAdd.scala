@@ -13,6 +13,9 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 
 
+
+
+
 object DeltaAdd {
 
 	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
@@ -37,11 +40,11 @@ object DeltaAdd {
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 
-					import sqlContext.implicits._
+					
 
 					val antuitStageTablename = args(0)
 					val deltaTable = args(1)
-
+import sqlContext.implicits._
 					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)  
 
 					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
@@ -75,7 +78,7 @@ import org.apache.spark.sql.types._
 						val schema = StructType(dfDeltacci.schema.fields)
 						var dfDeltatx = sqlContext.createDataFrame(sc.emptyRDD[Row],schema )
 
-
+import sqlContext.implicits._
 						if(deltaTableCciT.sameElements(dfDeltatxT))
 						{
 							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
