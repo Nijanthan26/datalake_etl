@@ -69,7 +69,7 @@ object DeltaAdd {
 
 import org.apache.spark.sql.types._
 						val schema = StructType(dfDeltacci.schema.fields)
-						var dfDeltatx = sc.createDataFrame(sc.emptyRDD[Row],schema )
+						var dfDeltatx = sqlContext.createDataFrame(sc.emptyRDD[Row],schema )
 
 
 						if(dfDeltacciCol.sameElements(dfDeltatxCol))
