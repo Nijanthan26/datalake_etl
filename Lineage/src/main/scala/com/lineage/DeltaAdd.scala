@@ -11,6 +11,7 @@ import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types._
 
 object DeltaAdd {
 
@@ -58,31 +59,53 @@ object DeltaAdd {
 
 					if(table.startsWith("acl_")){
 
-					  
-					  println("..................................................................................................................."+table+db)
-					  
+
+						println("..................................................................................................................."+table+db)
+
 						val deltaTableCci = "acl_cci_"+table.substring(4)
 						val deltaTableTx = "acl_tx_"+table.substring(4)
 
 						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
-						val dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+
+
+						val schema = StructType(dfDeltacci.schema.fields)
+						var dfDeltatx = spark.createDataFrame(sc.emptyRDD[Row],schema )
+
+
+						if(dfDeltacciCol.sameElements(dfDeltatxCol))
+						{
+							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+						}else
+						{
+							var  selectQuerytx= "select "
+									for(i <- 0 until (dfDeltacciCol.length)){
+										if(dfDeltatxCol contains dfDeltacciCol(i))
+										{
+											selectQuerytx = selectQuerytx +" "+dfDeltacciCol(i)+","
+										}else{
+											selectQuerytx = selectQuerytx +"  null as "+dfDeltacciCol(i)+","
+										}
+									}
+							selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
+							dfDeltatx = sqlContext.sql(selectQuerytx)
+						}
 
 
 						val dfDelta = dfDeltacci.unionAll(dfDeltatx)
-						if(dfDelta.count >0)
-						{
-							val res = addDeltaIncremental(dfProc, dfDelta )
+								if(dfDelta.count >0)
+								{
+									val res = addDeltaIncremental(dfProc, dfDelta )
 
-									res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
-									sqlContext.sql("create table "+antuitStageTablename+"_merge like "+ antuitStageTablename)
-									sqlContext.sql("drop table if exists "+antuitStageTablename)
-									sqlContext.sql("create table "+antuitStageTablename+" like "+ antuitStageTablename+"_merge")
-									sqlContext.sql("ALTER TABLE "+antuitStageTablename +" set location \'/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
-									sqlContext.sql("drop table if exists  "+antuitStageTablename+"_merge")
-						}
-						else{
-							System.exit(0)
-						}
+											res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
+											sqlContext.sql("create table "+antuitStageTablename+"_merge like "+ antuitStageTablename)
+											sqlContext.sql("drop table if exists "+antuitStageTablename)
+											sqlContext.sql("create table "+antuitStageTablename+" like "+ antuitStageTablename+"_merge")
+											sqlContext.sql("ALTER TABLE "+antuitStageTablename +" set location \'/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
+											sqlContext.sql("drop table if exists  "+antuitStageTablename+"_merge")
+								}
+								else{
+									System.exit(0)
+								}
 
 
 					}

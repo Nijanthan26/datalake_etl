@@ -112,8 +112,8 @@ object FirstDump {
 					else
 					{
 
-						//val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
-						val LatestData = sqlContext.sql("select * from  "+deltaTable) // Load latest data from impala
+					
+					 	val LatestData = sqlContext.sql("select * from  "+deltaTable) // Load latest data from impala
 								val res = addDeltaFirstTime(LatestData)
 
 								res.registerTempTable("mytempTable")
