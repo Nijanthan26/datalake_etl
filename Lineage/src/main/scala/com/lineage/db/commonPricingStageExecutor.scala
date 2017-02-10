@@ -343,7 +343,7 @@ hj_cust_xref""")
 
 //println("Total count is :............................................................."+(commonPricingStageDf1.count + commonPricingStageDf2.count))
 
-commonPricingStageDf1.write.mode("append").jdbc(url, "common_pricing_stage_test", prop)
+commonPricingStageDf1.write.mode("append").jdbc(url, "common_pricing_stage", prop)
 
 //commonPricingStageDf1.registerTempTable("commonPricingStage1")
 //commonPricingStageDf2.registerTempTable("commonPricingStage2")
@@ -352,27 +352,27 @@ commonPricingStageDf1.write.mode("append").jdbc(url, "common_pricing_stage_test"
 //sqlContext.sql("create table default.commonPricingStage2 as select * from commonPricingStage2")
 //commonPricingStageDF.registerTempTable("common_pricing_stage")
 
-commonPricingStageDf2.write.mode("append").jdbc(url, "common_pricing_stage_test", prop)
+commonPricingStageDf2.write.mode("append").jdbc(url, "common_pricing_stage", prop)
 
 val chargeDimDf = sqlContext.sql("""select distinct
-cast(lin_consolidated_charge_code__c as string) as normalised_charge_code
-,lin_consolidated_charge_name__c as normalised_charge_name
+nvl(cast(lin_consolidated_charge_code__c as string), "NA") as normalised_charge_code
+,nvl(lin_consolidated_charge_name__c , "NA")as normalised_charge_name
 from 
 antuit_pricing.chargecode_xref""")
 
 chargeDimDf.write.jdbc(url, "charge_dim_test", prop)
 
 val costCenterDimDf = sqlContext.sql("""select distinct
-lin_workday_cost_center__c as cost_center
-,lin_workday_location_id__c as workday_location
+nvl(lin_workday_cost_center__c , "NA") as cost_center
+,nvl(lin_workday_location_id__c , "NA") as workday_location
 from 
 antuit_pricing.costcenter_xref""")
 
 costCenterDimDf.write.jdbc(url, "cost_center_dim_test", prop)
 
 val customerDimDf = sqlContext.sql("""select distinct
-lin_customer_enterprise_id__c AS enterprise_id
-,lin_survivor_customer_name__c as normalised_client_name
+nvl(lin_customer_enterprise_id__c , "NA") as enterprise_id
+,nvl(lin_survivor_customer_name__c , "NA") as normalised_client_name
 from
 antuit_pricing.customer_xref""")
 
