@@ -32,18 +32,18 @@ object CPRateHistFactExecutor {
 					val rate_history_factMRS = sqlContext.sql(""" 
 select distinct
 fnl.legacy_source_system as legacy_source_system
-,fnl.lin_customer_enterprise_id__c as Enterprise_Id
-,fnl.lin_survivor_customer_name__c as Normalised_Client_name
-,fnl.lin_workday_cost_center__c as Cost_Center
-,fnl.lin_workday_location_id__c as Workday_Location
-,fnl.lin_consolidated_charge_code__c	as Normalised_Charge_Code	
-,fnl.lin_consolidated_charge_name__c as Normalised_charge_name
+,fnl.lin_customer_enterprise_id__c as enterprise_Id
+,fnl.lin_survivor_customer_name__c as normalised_client_name
+,fnl.lin_workday_cost_center__c as cost_center
+,fnl.lin_workday_location_id__c as workday_location
+,fnl.lin_consolidated_charge_code__c	as normalised_charge_code	
+,fnl.lin_consolidated_charge_name__c as normalised_charge_name
 ,fnl.fcustcode as legacy_customer_code
 ,fnl.facilityid as legacy_warehouse_id
 ,fnl.fgl as legacy_charge_code
-,fnl.invoice_min_date  as Charge_effective_date
-,fnl.invoice_max_date as Charge_expiry_date
-,fnl.fbasis as Increment
+,fnl.invoice_min_date  as charge_effective_date
+,fnl.invoice_max_date as charge_expiry_date
+,fnl.fbasis as increment
 ,fnl.frate as rate
 ,fnl.line_billed_by as uom
 from
