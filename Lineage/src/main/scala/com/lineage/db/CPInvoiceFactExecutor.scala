@@ -59,7 +59,7 @@ inv.invoice_id
 ,cust.customer_code
 from 
 antuit_stage.hj_t_bmm_invoice inv 
-inner join antuit_stage.hj_t_bmm_charge chg on inv.invoice_id = chg.invoice_id left join antuit_stage.hj_t_bmm_contract_invoice_type cit on inv.contract_invoice_type_id = cit.contract_invoice_type_idinner join antuit_stage.hj_t_bmm_contract_master cm on cit.contract_id = cm.contract_idleft join antuit_stage.hj_t_bmm_customer cust on cm.customer_id = cust.customer_id
+inner join antuit_stage.hj_t_bmm_charge chg on inv.invoice_id = chg.invoice_id left join antuit_stage.hj_t_bmm_contract_invoice_type cit on inv.contract_invoice_type_id = cit.contract_invoice_type_id inner join antuit_stage.hj_t_bmm_contract_master cm on cit.contract_id = cm.contract_idleft join antuit_stage.hj_t_bmm_customer cust on cm.customer_id = cust.customer_id
 ) inv_amt
 group by 
 inv_amt.customer_code
