@@ -170,6 +170,6 @@ on concat(a.legacy_source_system,nvl((case when a.facilityid like '0%' then cast
 """)
 
 
-rate_history_factMRS.write.mode("append").jdbc(url, "common_pricing_stage", prop)
+rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact", prop)
 	}
 }
