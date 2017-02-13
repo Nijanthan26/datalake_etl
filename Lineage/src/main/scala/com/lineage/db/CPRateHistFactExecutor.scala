@@ -32,7 +32,8 @@ object CPRateHistFactExecutor {
 //,from_unixtime(unix_timestamp(fnl.invoice_max_date),'yyyy-mm-dd HH:mm:SS.S') as charge_expiry_date		
 					val rate_history_factMRS = sqlContext.sql(""" 
 select distinct
-fnl.legacy_source_system as legacy_source_system
+CURRENT_TIMESTAMP as updated_date
+,fnl.legacy_source_system as legacy_source_system
 ,fnl.lin_customer_enterprise_id__c as enterprise_id
 ,fnl.lin_survivor_customer_name__c as normalised_client_name
 ,fnl.lin_workday_cost_center__c as cost_center
@@ -172,7 +173,8 @@ on concat(a.legacy_source_system,nvl((case when a.facilityid like '0%' then cast
 
 
 val rate_history_factHJ = sqlContext.sql("""select distinct
-fnl.legacy_source_system as legacy_source_system
+CURRENT_TIMESTAMP as updated_date
+,fnl.legacy_source_system as legacy_source_system
 ,fnl.lin_customer_enterprise_id__c as enterprise_id
 ,fnl.lin_survivor_customer_name__c as normalised_client_name
 ,fnl.lin_workday_cost_center__c as cost_center
@@ -258,7 +260,7 @@ on concat(a.legacy_source_system,nvl((case when a.wh_id like '0%' then cast(cast
 )fnl  
 """)
 
-//rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact", prop)
-rate_history_factHJ.write.mode("append").jdbc(url, "rate_history_fact_test", prop)
+rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact_imp", prop)
+rate_history_factHJ.write.mode("append").jdbc(url, "rate_history_fact_imp", prop)
 	}
 }
