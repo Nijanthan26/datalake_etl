@@ -32,8 +32,8 @@ object CPRateHistFactExecutor {
 					val rate_history_factMRS = sqlContext.sql(""" 
 select distinct
 fnl.legacy_source_system
-,fnl.lin_customer_enterprise_id__c
-,fnl.lin_survivor_customer_name__c
+,nvl(fnl.lin_customer_enterprise_id__c , "NotAvailable" ) as lin_customer_enterprise_id__c
+,nvl(fnl.lin_survivor_customer_name__c , "NotAvailable" ) as lin_survivor_customer_name__c
 ,fnl.lin_workday_cost_center__c
 ,fnl.lin_workday_location_id__c
 ,fnl.lin_consolidated_charge_code__c		
