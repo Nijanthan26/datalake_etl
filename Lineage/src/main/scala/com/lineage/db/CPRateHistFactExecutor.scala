@@ -41,8 +41,8 @@ fnl.legacy_source_system as legacy_source_system
 ,fnl.fcustcode as legacy_customer_code
 ,fnl.facilityid as legacy_warehouse_id
 ,fnl.fgl as legacy_charge_code
-,fnl.invoice_min_date  as charge_effective_date
-,fnl.invoice_max_date as charge_expiry_date
+,from_unixtime(unix_timestamp(fnl.invoice_min_date),'yyyy-mm-dd HH:mm:SS.S')  as charge_effective_date
+,from_unixtime(unix_timestamp(fnl.invoice_max_date),'yyyy-mm-dd HH:mm:SS.S') as charge_expiry_date
 ,fnl.fbasis as increment
 ,fnl.frate as rate
 ,fnl.line_billed_by as uom
