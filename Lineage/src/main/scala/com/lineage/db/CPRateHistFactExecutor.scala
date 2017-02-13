@@ -31,21 +31,21 @@ object CPRateHistFactExecutor {
 					
 					val rate_history_factMRS = sqlContext.sql(""" 
 select distinct
-fnl.legacy_source_system
-,nvl(fnl.lin_customer_enterprise_id__c , "NotAvailable" ) as lin_customer_enterprise_id__c
-,nvl(fnl.lin_survivor_customer_name__c , "NotAvailable" ) as lin_survivor_customer_name__c
-,fnl.lin_workday_cost_center__c
-,fnl.lin_workday_location_id__c
-,fnl.lin_consolidated_charge_code__c		
-,fnl.lin_consolidated_charge_name__c
-,fnl.fcustcode
-,fnl.facilityid
-,fnl.fgl
-,fnl.invoice_min_date
-,fnl.invoice_max_date
-,fnl.fbasis
-,fnl.frate
-,fnl.line_billed_by
+fnl.legacy_source_system as legacy_source_system
+,fnl.lin_customer_enterprise_id__c as Enterprise_Id
+,fnl.lin_survivor_customer_name__c as Normalised_Client_name
+,fnl.lin_workday_cost_center__c as Cost_Center
+,fnl.lin_workday_location_id__c as Workday_Location
+,fnl.lin_consolidated_charge_code__c	as Normalised_Charge_Code	
+,fnl.lin_consolidated_charge_name__c as Normalised_charge_name
+,fnl.fcustcode as legacy_customer_code
+,fnl.facilityid as legacy_warehouse_id
+,fnl.fgl as legacy_charge_code
+,fnl.invoice_min_date  as Charge_effective_date
+,fnl.invoice_max_date as Charge_expiry_date
+,fnl.fbasis as Increment
+,fnl.frate as rate
+,fnl.line_billed_by as uom
 from
 (
 select 
