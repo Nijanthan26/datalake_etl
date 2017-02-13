@@ -105,8 +105,9 @@ on (concat(tab.legacy_source_system, nvl(tab.fcustcode,cast('' as string))))=(co
 left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref where legacy_lin_system__c='MRS') costc
 on concat(tab.legacy_source_system,nvl((case when tab.facilityid like '0%' then cast(cast(tab.facilityid as int) as string) else cast(tab.facilityid as string) end),cast('' as string)))=costc.uid""")
 
-invoice_factHJ.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
 invoice_factMRS.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
+invoice_factHJ.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
+
 
   	}
 }
