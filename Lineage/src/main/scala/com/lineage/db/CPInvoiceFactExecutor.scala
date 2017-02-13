@@ -106,7 +106,7 @@ left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_I
 on concat(tab.legacy_source_system,nvl((case when tab.facilityid like '0%' then cast(cast(tab.facilityid as int) as string) else cast(tab.facilityid as string) end),cast('' as string)))=costc.uid""")
 
 //invoice_factMRS.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
-invoice_factHJ.write.mode("append").jdbc(url, "invoice_fact_imp_HJ", prop)
+invoice_factHJ.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
 
 
   	}
