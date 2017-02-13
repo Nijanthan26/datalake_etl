@@ -171,6 +171,94 @@ on concat(a.legacy_source_system,nvl((case when a.facilityid like '0%' then cast
 """)
 
 
-rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact_imp", prop)
+val rate_history_factHJ = sqlContext.sql("""select distinct
+fnl.legacy_source_system as legacy_source_system
+,fnl.lin_customer_enterprise_id__c as enterprise_id
+,fnl.lin_survivor_customer_name__c as normalised_client_name
+,fnl.lin_workday_cost_center__c as cost_center
+,fnl.lin_workday_location_id__c as workday_location
+,fnl.lin_consolidated_charge_code__c as normalised_charge_code		
+,fnl.lin_consolidated_charge_name__c as normalised_charge_name
+,fnl.customer_code as legacy_customer_code
+,fnl.wh_id as legacy_warehouse_id
+,fnl.chargeback_code as legacy_charge_code
+,fnl.invoice_min_date as charge_effective_date
+,fnl.invoice_max_date as charge_expiry_date
+,fnl.Increment as increment
+,fnl.rate as rate 
+,fnl.uom as uom
+from
+(
+select
+a.*
+,xref.LIN_CUSTOMER_ENTERPRISE_ID__C
+,xref.LIN_SURVIVOR_CUSTOMER_NAME__C
+,costc.LIN_WORKDAY_COST_CENTER__C
+,costc.LIN_WORKDAY_LOCATION_ID__C
+,chxref.LIN_CONSOLIDATED_CHARGE_CODE__C
+,chxref.LIN_CONSOLIDATED_CHARGE_NAME__C
+from
+(
+select 
+tab.legacy_source_system
+,tab.customer_code
+,tab.wh_id
+,tab.uom
+,tab.chargeback_code
+,tab.Increment
+,tab.rate
+,min(tab.charge_date_time) invoice_min_date
+,max(tab.charge_date_time) invoice_max_date
+from
+(
+select 
+count(*) counts
+,'HIGHJUMP' as legacy_source_system
+,h.charge_date_time
+,d.contract_code as customer_code
+,d.wh_id
+,e.uom
+,b.chargeback_code
+,NVL(e.weight_increment,tbpmp.rate_increment) as Increment
+,h.rate
+from 
+antuit_stage.hj_t_bmm_charge h   	
+left join antuit_stage.hj_t_bmm_cont_inv_type_chargeback b on (h.chargeback_id = b.chargeback_id) 
+left join antuit_stage.hj_t_bmm_contract_invoice_type c on (b.contract_invoice_type_id = c.contract_invoice_type_id) 
+left join antuit_stage.hj_t_bmm_contract_master d on (c.contract_id = d.contract_id) 
+left join antuit_stage.hj_t_bmm_chargeback_rate e on (h.chargeback_rate_id = e.chargeback_rate_id)
+left join antuit_stage.hj_t_bmm_charge_event_ref g on (h.charge_id =g.charge_id) 
+left join antuit_stage.hj_t_bmm_param_manual_prompt tbpmp on (b.chargeback_id = tbpmp.chargeback_id)
+group by 
+h.charge_date_time
+,d.contract_code
+,d.wh_id
+,e.uom
+,b.chargeback_code
+,NVL(e.weight_increment,tbpmp.rate_increment)
+,h.rate
+) tab
+group by 
+tab.legacy_source_system
+,tab.customer_code
+,tab.wh_id
+,tab.uom
+,tab.chargeback_code
+,tab.Increment
+,tab.rate
+order by
+tab.customer_code
+) a
+left join (select distinct LIN_CUSTOMER_ENTERPRISE_ID__C,LIN_SURVIVOR_CUSTOMER_NAME__C,LIN_SOURCE_SYSTEM_NAME__C,LIN_LEGACY_CUSTOMER_CODE__C from antuit_pricing.customer_xref where LIN_SOURCE_SYSTEM_NAME__C ='HIGHJUMP') xref
+on (concat(a.legacy_source_system, nvl(a.customer_code,cast('' as string))))=(concat(nvl(xref.LIN_SOURCE_SYSTEM_NAME__C,cast('' as string)),nvl(xref.LIN_LEGACY_CUSTOMER_CODE__C,cast('' as string))))
+left join (select distinct uid,LIN_CONSOLIDATED_CHARGE_CODE__C,LIN_CONSOLIDATED_CHARGE_NAME__C from antuit_pricing.chargecode_xref where lin_legacy_system__c='HIGHJUMP') chxref
+on concat(a.legacy_source_system,nvl((case when a.chargeback_code like '0%' then cast(cast(a.chargeback_code as int) as string) else cast(a.chargeback_code as string) end),cast('' as string)))=chxref.uid
+left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref where legacy_lin_system__c='HIGHJUMP') costc
+on concat(a.legacy_source_system,nvl((case when a.wh_id like '0%' then cast(cast(a.wh_id as int) as string) else cast(a.wh_id as string) end),cast('' as string)))=costc.uid
+)fnl  
+""")
+
+//rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact", prop)
+rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact_test", prop)
 	}
 }
