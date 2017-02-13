@@ -259,6 +259,6 @@ on concat(a.legacy_source_system,nvl((case when a.wh_id like '0%' then cast(cast
 """)
 
 //rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact", prop)
-rate_history_factMRS.write.mode("append").jdbc(url, "rate_history_fact_test", prop)
+rate_history_factHJ.write.mode("append").jdbc(url, "rate_history_fact_test", prop)
 	}
 }
