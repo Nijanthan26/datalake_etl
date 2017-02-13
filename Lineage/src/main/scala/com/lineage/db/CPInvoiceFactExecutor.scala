@@ -26,8 +26,7 @@ object CPInvoiceFactExecutor {
 					prop.setProperty("user",username)
 					prop.setProperty("password",password)
 					
-					val invoice_factHJ = sqlContext.sql(""" insert into antuit_pricing.invoice_fact
-select distinct
+					val invoice_factHJ = sqlContext.sql(""" select distinct
 tab.legacy_source_system as legacy_source_system
 ,xref.LIN_CUSTOMER_ENTERPRISE_ID__C as enterprise_id
 ,xref.LIN_SURVIVOR_CUSTOMER_NAME__C as customer_name
@@ -105,7 +104,7 @@ on (concat(tab.legacy_source_system, nvl(tab.fcustcode,cast('' as string))))=(co
 left join (select distinct uid,LIN_WORKDAY_COST_CENTER__C,LIN_WORKDAY_LOCATION_ID__C from antuit_pricing.costcenter_xref where legacy_lin_system__c='MRS') costc
 on concat(tab.legacy_source_system,nvl((case when tab.facilityid like '0%' then cast(cast(tab.facilityid as int) as string) else cast(tab.facilityid as string) end),cast('' as string)))=costc.uid""")
 
-//invoice_factMRS.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
+invoice_factMRS.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
 invoice_factHJ.write.mode("append").jdbc(url, "invoice_fact_imp", prop)
 
 
