@@ -32,7 +32,7 @@ object CPRateHistFactExecutor {
 					val rate_history_factMRS = sqlContext.sql(""" 
 select distinct
 fnl.legacy_source_system as legacy_source_system
-,fnl.lin_customer_enterprise_id__c as enterprise_Id
+,fnl.lin_customer_enterprise_id__c as enterprise_id
 ,fnl.lin_survivor_customer_name__c as normalised_client_name
 ,fnl.lin_workday_cost_center__c as cost_center
 ,fnl.lin_workday_location_id__c as workday_location
