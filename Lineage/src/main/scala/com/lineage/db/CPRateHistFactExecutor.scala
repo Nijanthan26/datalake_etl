@@ -30,7 +30,7 @@ object CPRateHistFactExecutor {
 					
 			//,from_unixtime(unix_timestamp(fnl.invoice_min_date),'yyyy-mm-dd HH:mm:SS.S')  as charge_effective_date
 //,from_unixtime(unix_timestamp(fnl.invoice_max_date),'yyyy-mm-dd HH:mm:SS.S') as charge_expiry_date		
-					val rate_history_factMRS = sqlContext.sql(""" 
+val rate_history_factMRS = sqlContext.sql(""" 
 select distinct
 CURRENT_TIMESTAMP as updated_date
 ,fnl.legacy_source_system as legacy_source_system
