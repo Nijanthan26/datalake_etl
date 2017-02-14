@@ -77,13 +77,29 @@ object FirstDump {
 						val dfDeltacciCol = deltaTableCciT.columns
 						val dfDeltatxCol = dfDeltatxT.columns
 
-
-						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
+						var cciSelectQuery = ""
+						
+						if(deltaTableTx.equals("acl_m_zip")){
+						 cciSelectQuery = "select  tab.*, 'CCI' as source from  "+db+"."+deltaTableCci+" tab"
+						}
+						else{
+						 cciSelectQuery = "select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab"
+						}
+						
+						val dfDeltacci = sqlContext.sql(cciSelectQuery) //load the Previously Processes table  from Data Lake
 
 						if(dfDeltacciCol.sameElements(dfDeltatxCol))
 						{
-							println("...............................................................")
-							val dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+						var txSelectQuery = ""
+						
+						if(deltaTableTx.equals("acl_m_zip")){
+						 txSelectQuery = "select  tab.*, 'TX' as source  from  "+db+"."+deltaTableTx+" tab"
+						}
+						else{
+						 txSelectQuery = "select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
+						}
+						  
+							val dfDeltatx = sqlContext.sql(txSelectQuery) // Load the delta data from Impala
 							val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
 							res.registerTempTable("mytempTable")
 						}else
@@ -98,8 +114,16 @@ object FirstDump {
 										}
 
 									}
-							selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
-									val dfDeltatx = sqlContext.sql(selectQuerytx)
+							
+							
+							if(deltaTableTx.equals("acl_m_zip")){
+							    selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code  from  "+db+"."+deltaTableTx+" tab"
+							}
+							else{
+						       selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
+							}
+							    
+							    val dfDeltatx = sqlContext.sql(selectQuerytx)
 									val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
 									//dfDeltatx.show()
 									res.registerTempTable("mytempTable")

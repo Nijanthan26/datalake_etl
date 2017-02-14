@@ -74,15 +74,30 @@ object DeltaAdd {
 						val dfDeltacciCol = deltaTableCciT.columns
 						val dfDeltatxCol = dfDeltatxT.columns
 
-						val dfDeltacci = sqlContext.sql("select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab") //load the Previously Processes table  from Data Lake
+						var cciSelectQuery = ""
+						
+						if(deltaTableTx.equals("acl_m_zip")){
+						 cciSelectQuery = "select  tab.*, 'CCI' as source from  "+db+"."+deltaTableCci+" tab"
+						}
+						else{
+						 cciSelectQuery = "select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab"
+						}
+						
 
+						val dfDeltacci = sqlContext.sql(cciSelectQuery) //load the Previously Processes table  from Data Lake
+
+						
 						import org.apache.spark.sql.types._
 						val schema = StructType(dfDeltacci.schema.fields)
 						var dfDeltatx = sqlContext.createDataFrame(sc.emptyRDD[Row],schema )
 
 						if(dfDeltacciCol.sameElements(dfDeltatxCol))
 						{
+						  if(deltaTableTx.equals("acl_m_zip")){
+						  dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+						  }else{						  
 							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+						  }
 						}else
 						{
 							var  selectQuerytx= "select "
@@ -94,8 +109,13 @@ object DeltaAdd {
 											selectQuerytx = selectQuerytx +"  null as "+dfDeltacciCol(i)+","
 										}
 									}
+						if(deltaTableTx.equals("acl_m_zip")){
+						  selectQuerytx = selectQuerytx + " \'TX\' as source  from  "+db+"."+deltaTableTx+" tab"
+						}
+						else{
 							selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
-									dfDeltatx = sqlContext.sql(selectQuerytx)
+						}
+						dfDeltatx = sqlContext.sql(selectQuerytx)
 						}
 
 
