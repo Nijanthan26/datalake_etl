@@ -117,7 +117,7 @@ object FirstDump {
 							
 							
 							if(table.equals("acl_m_zip")){
-							    selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code  from  "+db+"."+deltaTableTx+" tab"
+							    selectQuerytx = selectQuerytx + " \'TX\' as source   from  "+db+"."+deltaTableTx+" tab"
 							}
 							else{
 						       selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
