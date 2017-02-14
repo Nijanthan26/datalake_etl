@@ -76,7 +76,7 @@ object DeltaAdd {
 
 						var cciSelectQuery = ""
 						
-						if(deltaTableTx.equals("acl_m_zip")){
+						if(table.equals("acl_m_zip")){
 						 cciSelectQuery = "select  tab.*, 'CCI' as source from  "+db+"."+deltaTableCci+" tab"
 						}
 						else{
@@ -93,7 +93,7 @@ object DeltaAdd {
 
 						if(dfDeltacciCol.sameElements(dfDeltatxCol))
 						{
-						  if(deltaTableTx.equals("acl_m_zip")){
+						  if(table.equals("acl_m_zip")){
 						  dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 						  }else{						  
 							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
@@ -109,7 +109,7 @@ object DeltaAdd {
 											selectQuerytx = selectQuerytx +"  null as "+dfDeltacciCol(i)+","
 										}
 									}
-						if(deltaTableTx.equals("acl_m_zip")){
+						if(table.equals("acl_m_zip")){
 						  selectQuerytx = selectQuerytx + " \'TX\' as source  from  "+db+"."+deltaTableTx+" tab"
 						}
 						else{

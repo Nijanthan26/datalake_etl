@@ -79,7 +79,7 @@ object FirstDump {
 
 						var cciSelectQuery = ""
 						
-						if(deltaTableTx.equals("acl_m_zip")){
+						if(table.equals("acl_m_zip")){
 						 cciSelectQuery = "select  tab.*, 'CCI' as source from  "+db+"."+deltaTableCci+" tab"
 						}
 						else{
@@ -92,7 +92,7 @@ object FirstDump {
 						{
 						var txSelectQuery = ""
 						
-						if(deltaTableTx.equals("acl_m_zip")){
+						if(table.equals("acl_m_zip")){
 						 txSelectQuery = "select  tab.*, 'TX' as source  from  "+db+"."+deltaTableTx+" tab"
 						}
 						else{
@@ -116,7 +116,7 @@ object FirstDump {
 									}
 							
 							
-							if(deltaTableTx.equals("acl_m_zip")){
+							if(table.equals("acl_m_zip")){
 							    selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code  from  "+db+"."+deltaTableTx+" tab"
 							}
 							else{
