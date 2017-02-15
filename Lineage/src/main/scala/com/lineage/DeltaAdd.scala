@@ -80,7 +80,7 @@ object DeltaAdd {
 						 cciSelectQuery = "select  tab.*, 'CCI' as source from  "+db+"."+deltaTableCci+" tab"
 						}
 						else{
-						 cciSelectQuery = "select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab"
+						 cciSelectQuery = "select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_comp_code from  "+db+"."+deltaTableCci+" tab"
 						}
 						
 
@@ -96,7 +96,7 @@ object DeltaAdd {
 						  if(table.equals("acl_m_zip")){
 						  dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 						  }else{						  
-							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
+							dfDeltatx = sqlContext.sql("select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_comp_code from  "+db+"."+deltaTableTx+" tab") // Load the delta data from Impala
 						  }
 						}else
 						{
@@ -113,7 +113,7 @@ object DeltaAdd {
 						  selectQuerytx = selectQuerytx + " \'TX\' as source  from  "+db+"."+deltaTableTx+" tab"
 						}
 						else{
-							selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
+							selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_comp_code from  "+db+"."+deltaTableTx+" tab"
 						}
 						dfDeltatx = sqlContext.sql(selectQuerytx)
 						}

@@ -83,7 +83,7 @@ object FirstDump {
 						 cciSelectQuery = "select  tab.*, 'CCI' as source from  "+db+"."+deltaTableCci+" tab"
 						}
 						else{
-						 cciSelectQuery = "select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_compcode from  "+db+"."+deltaTableCci+" tab"
+						 cciSelectQuery = "select  tab.*, 'CCI' as source , concat(tab.comp_code,concat('_','CCI'))  as global_comp_code from  "+db+"."+deltaTableCci+" tab"
 						}
 						
 						val dfDeltacci = sqlContext.sql(cciSelectQuery) //load the Previously Processes table  from Data Lake
@@ -96,7 +96,7 @@ object FirstDump {
 						 txSelectQuery = "select  tab.*, 'TX' as source  from  "+db+"."+deltaTableTx+" tab"
 						}
 						else{
-						 txSelectQuery = "select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
+						 txSelectQuery = "select  tab.*, 'TX' as source , concat(tab.comp_code,concat('_','TX'))  as global_comp_code from  "+db+"."+deltaTableTx+" tab"
 						}
 						  
 							val dfDeltatx = sqlContext.sql(txSelectQuery) // Load the delta data from Impala
@@ -120,7 +120,7 @@ object FirstDump {
 							    selectQuerytx = selectQuerytx + " \'TX\' as source   from  "+db+"."+deltaTableTx+" tab"
 							}
 							else{
-						       selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_compcode from  "+db+"."+deltaTableTx+" tab"
+						       selectQuerytx = selectQuerytx + " \'TX\' as source , concat(tab.comp_code,concat(\'_\',\'TX\'))  as global_comp_code from  "+db+"."+deltaTableTx+" tab"
 							}
 							    
 							    val dfDeltatx = sqlContext.sql(selectQuerytx)
