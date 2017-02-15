@@ -56,7 +56,16 @@ object hjFirstDump {
       val sc = new SparkContext(conf)
       val sqlContext = new org.apache.spark.sql.SQLContext(sc)
       import sqlContext.implicits._
-      if(args.length < 2)
+      if(args.length > 1)
+         {
+      val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
+      val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
+      val res = addDeltaFirstTimeWithArc(archData, LatestData)
+      //res.show()
+      res.registerTempTable("mytempTable")
+      sqlContext.sql("drop table if exists antuit_stage."+args(0))
+      sqlContext.sql("create table antuit_stage."+args(0)+" as select * from mytempTable");
+      } else
       {
       //val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
       val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
@@ -66,16 +75,8 @@ object hjFirstDump {
       sqlContext.sql("drop table if exists antuit_stage."+args(0))
       sqlContext.sql("create table antuit_stage."+args(0)+" as select * from mytempTable");
           }
-      else
-      {
-      val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
-      val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
-      val res = addDeltaFirstTimeWithArc(archData, LatestData)
-      //res.show()
-      res.registerTempTable("mytempTable")
-      sqlContext.sql("drop table if exists antuit_stage."+args(0))
-      sqlContext.sql("create table antuit_stage."+args(0)+" as select * from mytempTable");
-      }
+  
+     
 
    sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0))  
   
