@@ -56,6 +56,7 @@ object hjFirstDump {
       val sc = new SparkContext(conf)
       val sqlContext = new org.apache.spark.sql.SQLContext(sc)
       import sqlContext.implicits._
+      println("...................................................................................................................."+args.length)
       if(args.length > 1)
          {
       val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
