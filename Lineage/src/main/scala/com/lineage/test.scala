@@ -59,21 +59,21 @@ object test {
       if(args(2).equals("_"))
       {
       //val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
-      val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
+      val LatestData = sqlContext.sql("select * from  "+args(1)) // Load latest data from impala
       val res = addDeltaFirstTimeNoArc(LatestData)
       //res.show()
       res.write.format("parquet").saveAsTable(args(0))
           }
       else
       {
-      val archData = sqlContext.sql("select * from archimport."+args(2)) // Load archive data
-      val LatestData = sqlContext.sql("select * from sqoopdailydelta."+args(1)) // Load latest data from impala
+      val archData = sqlContext.sql("select * from "+args(2)) // Load archive data
+      val LatestData = sqlContext.sql("select * from "+args(1)) // Load latest data from impala
       val res = addDeltaFirstTimeWithArc(archData, LatestData)
       //res.show()
      res.write.format("parquet").saveAsTable(args(0))
       }
 
-   sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0))  
+   //sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0))  
   
       }
   
