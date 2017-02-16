@@ -49,11 +49,14 @@ object DeltaAddPrqt {
 					
 					val dfProc = sqlContext.sql("select * from "+antuitStageTablename+"_temp") //load the Previously Processes table  from Data Lake
 					val dfDelta = sqlContext.sql("select * from "+deltaTable) // Load the delta data from Impala
+//				/  val dfProc = sqlContext.sql("select * from hj_t_item_master_temp")
+					// dfProc.write.format("parquet").saveAsTable("hj_t_item_master")
+					
 					if(dfDelta.count >0)
 					{
 						val res = addDeltaIncremental(dfProc, dfDelta )
 						res.write.format("parquet").saveAsTable(antuitStageTablename)
-
+						sqlContext.sql("drop table "+antuitStageTablename+"_temp")
 
 					}
 					else{
