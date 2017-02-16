@@ -1,6 +1,6 @@
 #test classes #
 
-*/test.scala
+/src/main/scala/com/lineage/test.scala
 
 **/target/
 /target/
