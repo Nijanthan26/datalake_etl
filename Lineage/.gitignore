@@ -4,6 +4,9 @@
 **/bin/
 /bin/
 */bin/*
+**bin/com/lineage
+/bin/com/lineage/
+*/bin/com/lineage/*
 .classpath
 .project
 .settings
