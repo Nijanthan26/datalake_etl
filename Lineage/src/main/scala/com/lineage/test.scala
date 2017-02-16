@@ -66,6 +66,8 @@ object test {
           }
       else
       {
+        
+        
       val archData = sqlContext.sql("select * from "+args(2)) // Load archive data
       val LatestData = sqlContext.sql("select * from "+args(1)) // Load latest data from impala
       val res = addDeltaFirstTimeWithArc(archData, LatestData)
