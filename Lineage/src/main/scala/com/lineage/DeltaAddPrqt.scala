@@ -1,4 +1,5 @@
 package com.lineage
+
 import com.lineage.RowHash
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
@@ -11,7 +12,7 @@ import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
-object hjDeltaAdd {
+object DeltaAddPrqt {
 
 	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
@@ -32,32 +33,27 @@ object hjDeltaAdd {
 
 
 	def main(args: Array[String]): Unit = {
-			val conf = new SparkConf().setAppName("DeltaAdd")
+			
+
+					val antuitStageTablename = args(0)
+					val deltaTable = args(1)				
+					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
+					val db = deltaTable.substring(0,deltaTable.indexOf("."))
+					
+					val conf = new SparkConf().setAppName("DeltaAdd"+table)
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-					import sqlContext.implicits._
-					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0)) 
-
-					val dfProc = sqlContext.sql("select * from "+args(0)) //load the Previously Processes table  from Data Lake
-					val dfDelta = sqlContext.sql("select * from "+args(1)) // Load the delta data from Impala
+			
+				  import sqlContext.implicits._
+					sqlContext("ALTER TABLE "+antuitStageTablename+" RENAME TO "+antuitStageTablename+"_temp")
+					
+					val dfProc = sqlContext.sql("select * from "+antuitStageTablename+"_temp") //load the Previously Processes table  from Data Lake
+					val dfDelta = sqlContext.sql("select * from "+deltaTable) // Load the delta data from Impala
 					if(dfDelta.count >0)
 					{
 						val res = addDeltaIncremental(dfProc, dfDelta )
-								val cal = Calendar.getInstance()
-								val Date =cal.get(Calendar.DATE )
-								val Month1 =cal.get(Calendar.MONTH )
-								val Month = Month1+1
-								val Hour = cal.get(Calendar.HOUR_OF_DAY)
-								val min = cal.get(Calendar.MINUTE)
-								val second = cal.get(Calendar.SECOND)
+						res.write.format("parquet").saveAsTable(antuitStageTablename)
 
-								res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
-
-								sqlContext.sql("create table "+args(0)+"_merge like "+ args(0))
-								sqlContext.sql("drop table if exists "+args(0))
-								sqlContext.sql("create table "+args(0)+" like "+ args(0)+"_merge")
-								sqlContext.sql("ALTER TABLE "+ args(0) +" set location \'/antuit/databases/antuit_stage/"+args(0)+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second+"\'")
-								sqlContext.sql("drop table if exists "+args(0)+"_merge")
 
 					}
 					else{

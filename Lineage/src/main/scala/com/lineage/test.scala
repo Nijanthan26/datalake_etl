@@ -70,7 +70,7 @@ object test {
       val LatestData = sqlContext.sql("select * from "+args(1)) // Load latest data from impala
       val res = addDeltaFirstTimeWithArc(archData, LatestData)
       //res.show()
-     res.write.format("parquet").saveAsTable(args(0))
+      res.write.format("parquet").saveAsTable(args(0))
       }
 
    //sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0))  
