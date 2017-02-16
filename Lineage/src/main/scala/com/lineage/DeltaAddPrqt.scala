@@ -45,7 +45,7 @@ object DeltaAddPrqt {
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 			
 				  import sqlContext.implicits._
-					sqlContext("ALTER TABLE "+antuitStageTablename+" RENAME TO "+antuitStageTablename+"_temp")
+					sqlContext.sql("ALTER TABLE "+antuitStageTablename+" RENAME TO "+antuitStageTablename+"_temp")
 					
 					val dfProc = sqlContext.sql("select * from "+antuitStageTablename+"_temp") //load the Previously Processes table  from Data Lake
 					val dfDelta = sqlContext.sql("select * from "+deltaTable) // Load the delta data from Impala
