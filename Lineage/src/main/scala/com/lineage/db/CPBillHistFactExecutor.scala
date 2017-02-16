@@ -98,7 +98,7 @@ when upper(matc.fbilltype)='IS' then e.fis_days else matc.fnumdays end) as ren_p
 from 
 (select distinct d.*,c.facilityid as facilityid2,c.ftrack2,c.fcustcode as fcustcode2
 from antuit_stage.dl_mrs_billhist_delta d
-left outer join (select distinct facilityid,ftrack2,fcustcode from staging.mrs_inv_mst_delta) c
+left outer join (select distinct facilityid,ftrack2,fcustcode from antuit_stage.dl_mrs_inv_mst_delta) c
 on 
 (d.facilityid=c.facilityid
 and d.fcustcode=c.fcustcode
