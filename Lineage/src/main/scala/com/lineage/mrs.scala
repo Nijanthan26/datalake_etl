@@ -13,7 +13,7 @@ object mrs {
     
     val conf = new SparkConf().setAppName("MRS Import")
     val sc = new SparkContext(conf)
-    val tablename = args [0]
+    val tablename = args (0)
     
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     
