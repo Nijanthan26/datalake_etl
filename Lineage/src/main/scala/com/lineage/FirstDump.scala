@@ -15,7 +15,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 
 object FirstDump {
-<<<<<<< HEAD
+
 /*
  * To add md5 and sequence numbers to archive data and the latest data present in impala and dump the combined data in data lake.
  * This is one time run. 
@@ -193,4 +193,3 @@ object FirstDump {
 			// sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from antuit_stage."+ args(0)) 
 	}
 }
->>>>>>> DBexport
