@@ -23,8 +23,8 @@ option("dbtable", tablename).
 option("user", "readonly").
 option("password", "HJ#ric1!").load()
 
-
-dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sqoopdest/hj_"+tablename)
+dataframe_db.write.format("parquet").saveAsTable(antuitStageTablename)
+//dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sqoopdest/hj_"+tablename)
 
 
 }
