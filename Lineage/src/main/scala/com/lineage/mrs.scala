@@ -14,7 +14,7 @@ object mrs {
     val conf = new SparkConf().setAppName("MRS Import")
     val sc = new SparkContext(conf)
     val tablename = args (0)
-    
+    import org.apache.spark.SparkContext._
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     
     val tableData = sqlContext.read.format("jdbc")
