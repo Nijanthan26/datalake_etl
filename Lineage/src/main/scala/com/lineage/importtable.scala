@@ -23,6 +23,7 @@ option("dbtable", tablename).
 option("user", "readonly").
 option("password", "5u9pvWECL9DPtHUB").load()
 
+dataframe_db.show()
 //dataframe_db.write.format("parquet").saveAsTable("antuit_stage.mule_"+tablename)
 dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sqoopdest/hj_"+tablename)
 
