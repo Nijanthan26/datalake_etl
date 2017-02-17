@@ -24,6 +24,7 @@ object mrs {
     option("user", "readonly").
     option("password", "R3@60n1Y$").load()
     
+    dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sparkdest/mrs_"+tablename)
     
   }
   
