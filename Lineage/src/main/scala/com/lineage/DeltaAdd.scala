@@ -10,7 +10,7 @@ import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
-<<<<<<< HEAD
+
 
 object DeltaAdd {
   
@@ -53,7 +53,7 @@ object DeltaAdd {
         sqlContext.sql("drop table if exists antuit_stage."+args(0)+"_merge")
       }
 }
-=======
+
 import org.apache.spark.sql.functions._
 
 

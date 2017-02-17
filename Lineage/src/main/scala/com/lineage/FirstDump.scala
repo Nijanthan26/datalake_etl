@@ -1,7 +1,5 @@
 package com.lineage
-<<<<<<< HEAD
 
-=======
 import com.lineage.RowHash
 >>>>>>> DBexport
 import org.apache.spark.sql.Dataset
@@ -52,7 +50,7 @@ object FirstDump {
       }
   
 }
-=======
+
 
 	def addDeltaFirstTime(deltaDf: Dataset[Row]): Dataset[Row] = {
 			val sparkSession = deltaDf.sparkSession
