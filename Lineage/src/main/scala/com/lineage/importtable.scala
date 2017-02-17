@@ -17,13 +17,13 @@ object importtable {
    val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
 
 val dataframe_db = sqlcontext.read.format("jdbc").
-option("url", "jdbc:sqlserver://192.168.100.223:1433;databaseName=AAD").
+option("url", "jdbc:mysql://lineage-mrs-cluster.cluster-cpslmao02wkq.us-west-2.rds.amazonaws.com:3306/mrs_uat").
 option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver").
 option("dbtable", tablename).
 option("user", "readonly").
 option("password", "HJ#ric1!").load()
 
-dataframe_db.write.format("parquet").saveAsTable(antuitStageTablename)
+dataframe_db.write.format("parquet").saveAsTable("antuit_stage.mule_"+tablename)
 //dataframe_db.rdd.map { x => x.mkString("\u0001")}.saveAsTextFile("/antuit/sqoopdest/hj_"+tablename)
 
 
