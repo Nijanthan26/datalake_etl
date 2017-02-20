@@ -13,7 +13,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 object hjDeltaAdd {
 
-	def addDeltaIncremental(initialDfShaWithDate: DStream[String], deltaDf: DStream[String]): DStream[String] = {
+	def addDeltaIncremental(initialDfShaWithDate: String, deltaDf: String): String = {
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
 					val  delta = deltaDf
