@@ -6,7 +6,6 @@ import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
 import org.apache.spark.SparkConf
 //import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.Dataset[org.apache.spark.sql.Row]
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import java.util.Calendar
@@ -19,7 +18,8 @@ import org.apache.spark.SparkContext
 object DeltaAdd {
 
 	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-	  
+	  import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Row
 	  initialDfShaWithDate.show()
 	  
 			/*val initialDfSha = initialDfShaWithDate//.drop("archive_date")
