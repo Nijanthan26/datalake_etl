@@ -13,7 +13,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 object hjDeltaAddDown {
 
-	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]):Dataset[Row] = {
+	def addDeltaIncremental(initialDfShaWithDate: DataFrame[Row], deltaDf: Dataset[Row]):Dataset[Row] = {
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
 					val  delta = deltaDf
@@ -36,7 +36,7 @@ object hjDeltaAddDown {
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 					import sqlContext.implicits._
-					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0)) 
+				//	sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0)) 
 
 					val dfProc = sqlContext.sql("select * from "+args(0)) //load the Previously Processes table  from Data Lake
 					val dfDelta = sqlContext.sql("select * from "+args(1)) // Load the delta data from Impala
