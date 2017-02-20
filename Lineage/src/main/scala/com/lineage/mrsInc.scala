@@ -7,6 +7,7 @@ import org.apache.spark.SparkContext._
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.hive
 import com.microsoft.sqlserver.jdbc.SQLServerDriver
 import org.apache.spark.storage.StorageLevel._
 
@@ -21,6 +22,7 @@ object mrsInc {
     val table = args(0)
     val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+    
     
     
     val sourceTable = hiveContext.load("jdbc", 
