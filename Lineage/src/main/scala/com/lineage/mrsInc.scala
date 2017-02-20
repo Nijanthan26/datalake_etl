@@ -32,7 +32,7 @@ object mrsInc {
   "password" -> "R3@60n1Y$",
   "dbtable" -> table))
     
-   sourceTable.write.format("com.databricks.spark.csv").saveAsTable("default.mrs_test_source");  //Change  schema and table name
+   sourceTable.write.format("orc").saveAsTable("default.mrs_test_source");  //Change  schema and table name
     //sourceTable.write().saveAsTable("default.mrs_test_source");  //First time Import, Change  schema and table name
    /* 
     //sourceTable.show()
