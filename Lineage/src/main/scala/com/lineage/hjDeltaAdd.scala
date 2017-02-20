@@ -28,8 +28,8 @@ object hjDeltaAdd {
 					val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
 					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
 
+	
 	}
-
 
 	def main(args: Array[String]): Unit = {
 			val conf = new SparkConf().setAppName("DeltaAdd")
