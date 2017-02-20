@@ -6,7 +6,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 
 import org.apache.spark.sql._
-import org.apache.spark.SQLContext
+import org.apache.spark.sql.SQLContext
 import com.microsoft.sqlserver.jdbc.SQLServerDriver
 import org.apache.spark.storage.StorageLevel._
 
@@ -31,7 +31,7 @@ object mrsInc {
   "password" -> "R3@60n1Y$",
   "dbtable" -> table))
     
-   sourceTable.write().mode("overwrite").saveAsTable("default.mrs_test_source");  //Change  schema and table name
+   sourceTable.write().saveAsTable("default.mrs_test_source");  //Change  schema and table name
     //sourceTable.write().saveAsTable("default.mrs_test_source");  //First time Import, Change  schema and table name
    /* 
     //sourceTable.show()
