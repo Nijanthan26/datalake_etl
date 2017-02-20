@@ -37,6 +37,7 @@ object hjDeltaAddDown {
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 					import sqlContext.implicits._
 					import org.apache.spark.sql.hive._
+					val hc = new HiveContext(sc)
 
 				sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0)) 
 
