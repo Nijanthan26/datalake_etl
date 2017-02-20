@@ -1,6 +1,7 @@
 package com.lineage
 
-import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.DataFrame
+//import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
@@ -17,9 +18,7 @@ import org.apache.spark.SparkContext
 
 object DeltaAdd {
 
-	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-	  import org.apache.spark.sql.Dataset
-import org.apache.spark.sql.Row
+	def addDeltaIncremental(initialDfShaWithDate: DataFrame[Row], deltaDf: DataFrame[Row]): DataFrame[Row] = {
 	  initialDfShaWithDate.show()
 	  
 			/*val initialDfSha = initialDfShaWithDate//.drop("archive_date")
