@@ -16,16 +16,16 @@ object mrsInc {
   def main(args: Array[String])
   {
     
-    val conf = new SparkConf().setAppName("MRS_INC")
-    val sc = new SparkContext(conf)
-    
+		val conf = new SparkConf().setAppName("MRS")
+		val sc = new SparkContext(conf)
+    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     val table = args(0)
-    val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
-    //val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+   // val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
+   // val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     
     
     
-    val sourceTable = hiveContext.load("jdbc", 
+    val sourceTable = sqlContext.load("jdbc", 
   Map(
   "driver" -> "com.microsoft.sqlserver.jdbc.SQLServerDriver",
   "url" -> "jdbc:sqlserver://us0266sqlsrvmrs001.database.windows.net:1433;databaseName=US0009SQLDBFacilityData09_001",
