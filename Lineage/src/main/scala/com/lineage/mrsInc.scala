@@ -24,15 +24,35 @@ object mrsInc {
     
     
     
-    val sourceTable = sqlContext.load("jdbc", 
+    val mrsSource09 = sqlContext.load("jdbc", 
   Map(
   "driver" -> "com.microsoft.sqlserver.jdbc.SQLServerDriver",
   "url" -> "jdbc:sqlserver://us0266sqlsrvmrs001.database.windows.net:1433;databaseName=US0009SQLDBFacilityData09_001",
   "user" -> "readonly",
   "password" -> "R3@60n1Y$",
   "dbtable" -> table))
-    
-   sourceTable.write.format("orc").saveAsTable("default.mrs_test_source");  //Change  schema and table name
+  
+      val mrsSource61 = sqlContext.load("jdbc", 
+  Map(
+  "driver" -> "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+  "url" -> "jdbc:sqlserver://us0266sqlsrvmrs001.database.windows.net:1433;databaseName=US0002SQLDBFacilityData61_001",
+  "user" -> "readonly",
+  "password" -> "R3@60n1Y$",
+  "dbtable" -> table))
+  
+      val mrsSourceMain = sqlContext.load("jdbc", 
+  Map(
+  "driver" -> "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+  "url" -> "jdbc:sqlserver://us0266sqlsrvmrs001.database.windows.net:1433;databaseName=US0266SQLDBFacilityDataMain_001",
+  "user" -> "readonly",
+  "password" -> "R3@60n1Y$",
+  "dbtable" -> table))
+  
+   val mrsDf1 = mrsSource09.unionAll(mrsSource61)
+   
+   val mrsDf2 = mrsDf1.unionAll(mrsSourceMain)
+       
+   mrsDf2.write.format("orc").saveAsTable("default.mrs_test_source");  //Change  schema and table name
     //sourceTable.write().saveAsTable("default.mrs_test_source");  //First time Import, Change  schema and table name
    /* 
     //sourceTable.show()
