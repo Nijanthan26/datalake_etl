@@ -19,7 +19,7 @@ import org.apache.spark.SparkContext
 object DeltaAdd {
 
 	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame): DataFrame = {
-	  initialDfShaWithDate.show()
+	 // initialDfShaWithDate.show()
 	  
 			/*val initialDfSha = initialDfShaWithDate//.drop("archive_date")
 					val sparkSession = deltaDf.sparkSession
