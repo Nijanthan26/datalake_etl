@@ -21,7 +21,7 @@ object mrsInc {
     
     val table = args(0)
     val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
-    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+    //val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     
     
     
