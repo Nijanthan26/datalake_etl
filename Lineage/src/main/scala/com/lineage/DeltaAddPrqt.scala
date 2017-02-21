@@ -49,9 +49,7 @@ object DeltaAddPrqt {
 					
 					val dfProc = sqlContext.sql("select * from "+antuitStageTablename) //load the Previously Processes table  from Data Lake
 					val dfDelta = sqlContext.sql("select * from "+deltaTable) // Load the delta data from Impala
-//				/  val dfProc = sqlContext.sql("select * from antuit_stage.hj_t_bmm_charge")
-					// dfProc.coalesce(50).write.format("parquet").saveAsTable("default.hj_t_bmm_charge_SS")  some_RDD.coalesce(numParitionsToStoreOn)
-					
+
 					if(dfDelta.count >0)
 					{
 						val res = addDeltaIncremental(dfProc, dfDelta )
