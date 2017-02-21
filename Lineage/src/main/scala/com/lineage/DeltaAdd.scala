@@ -10,8 +10,11 @@ import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
+<<<<<<< HEAD
    
 import org.apache.spark.sql.functions._
+=======
+>>>>>>> master
 
 
 
