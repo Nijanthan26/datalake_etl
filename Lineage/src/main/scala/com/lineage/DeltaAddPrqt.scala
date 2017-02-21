@@ -46,12 +46,13 @@ object DeltaAddPrqt {
 					val conf = new SparkConf().setAppName("DeltaAdd"+table)
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+				  val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc) 
 			
 				  import sqlContext.implicits._
-					sqlContext.sql("ALTER TABLE "+antuitStageTablename+" RENAME TO "+antuitStageTablename+"_temp")
+					hiveContext.sql("ALTER TABLE "+antuitStageTablename+" RENAME TO "+antuitStageTablename+"_temp")
 					
-					val dfProc = sqlContext.sql("select * from "+antuitStageTablename+"_temp") //load the Previously Processes table  from Data Lake
-					val dfDelta = sqlContext.sql("select * from "+deltaTable) // Load the delta data from Impala
+					val dfProc = hiveContext.sql("select * from "+antuitStageTablename+"_temp") //load the Previously Processes table  from Data Lake
+					val dfDelta = hiveContext.sql("select * from "+deltaTable) // Load the delta data from Impala
 //				/  val dfProc = sqlContext.sql("select * from hj_t_item_master_temp")
 					// dfProc.write.format("parquet").saveAsTable("hj_t_item_master")
 					
@@ -59,7 +60,7 @@ object DeltaAddPrqt {
 					{
 						val res = addDeltaIncremental(dfProc, dfDelta,sqlContext )
 						res.write.format("parquet").saveAsTable(antuitStageTablename)
-						sqlContext.sql("drop table "+antuitStageTablename+"_temp")
+						hiveContext.sql("drop table "+antuitStageTablename+"_temp")
 
 					}
 					else{

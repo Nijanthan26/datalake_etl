@@ -15,7 +15,9 @@ object importtable {
    val conf = new SparkConf().setAppName("Import")
    val sc = new SparkContext(conf)
    val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
-
+ 
+   
+   
 val dataframe_db = sqlcontext.read.format("jdbc").
 option("url", "jdbc:mysql://lineage-mule-cluster.cluster-cpslmao02wkq.us-west-2.rds.amazonaws.com:3306/mrs_uat").
 option("driver", "com.mysql.jdbc.Driver").
