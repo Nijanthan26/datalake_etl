@@ -17,16 +17,20 @@ import org.apache.spark.SparkContext
 
 object DeltaAdd {
 
-  val sc: SparkContext
+  
+  val conf = new SparkConf().setAppName("DeltaAdd")
+	val sc = new SparkContext(conf)
+	val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+  
+  //val sc: SparkContext
 	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame): DataFrame = {
-	  //initialDfShaWithDate.show()
+	  
 	  
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
-				//	val sparkSession = deltaDf.sparkcontext
-       val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-
-					val  delta = deltaDf
-					val deltaDfSha = RowHash.addHash(delta)
+			//val sparkSession = deltaDf.sparkcontext
+     //  val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+     //val  delta = deltaDf
+					val deltaDfSha = RowHash.addHash(deltaDf)
 					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.createOrReplaceTempView("deltaDfSha")
@@ -39,9 +43,9 @@ object DeltaAdd {
 
 
 	def main(args: Array[String]): Unit = {
-			val conf = new SparkConf().setAppName("DeltaAdd")
-					val sc = new SparkContext(conf)
-					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+			    //val conf = new SparkConf().setAppName("DeltaAdd")
+					//val sc = new SparkContext(conf)
+					//val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 
 
 
