@@ -23,9 +23,9 @@ object DeltaAddPrqt {
 					//val  delta = deltaDf
 					val commonColList = deltaDf.columns.filter(x => !x.equals("archive_date")) 
 					val sortedDelta = deltaDf.select("archive_date" , commonColList:_*)
-					val deltaDfSha = RowHash.addHash(sortedDelta)
+					val deltaDfSha = RowHash.addHash(sortedDelta,sqlContext)
 					initialDfShaWithDate.registerTempTable("initialDfSha")
-					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
+					val currentRowNum = sqlContext.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.registerTempTable("deltaDfSha")
 					import org.apache.spark.sql.functions._ 
 					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
@@ -57,7 +57,7 @@ object DeltaAddPrqt {
 					
 					if(dfDelta.count >0)
 					{
-						val res = addDeltaIncremental(dfProc, dfDelta )
+						val res = addDeltaIncremental(dfProc, dfDelta,sqlContext )
 						res.write.format("parquet").saveAsTable(antuitStageTablename)
 						sqlContext.sql("drop table "+antuitStageTablename+"_temp")
 
