@@ -33,8 +33,7 @@ object hjDeltaAddDown {
 
 	def main(args: Array[String]): Unit = {
 			val conf = new SparkConf().setAppName("DeltaAdd")
-			   val sc: SparkContext
-					//val sc = new SparkContext(conf)
+			   val sc = new SparkContext(conf)
 			   val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 					import sqlContext.implicits._
 						sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ args(0) +"\',max(sequence) from "+ args(0)) 

@@ -1,7 +1,8 @@
 package com.lineage
 
 import com.lineage.RowHash
-import org.apache.spark.sql.Dataset
+//import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
@@ -17,10 +18,9 @@ object hjFirstDump {
  * To add md5 and sequence numbers to archive data and the latest data present in impala and dump the combined data in data lake.
  * This is one time run. 
  * */
-	def addDeltaFirstTimeWithArc(initialDf: Dataset[Row], deltaDf: Dataset[Row]): Dataset[Row] = {
-			    val sparkSession = deltaDf.sparkSession
-            
-             
+	def addDeltaFirstTimeWithArc(initialDf: DataFrame, deltaDf: DataFrame): DataFrame = {
+			    
+	        val sparkSession = deltaDf.sparkSession      
           // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
 			    val sortedinitialDf = initialDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
 			    val sortedDelta =     deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)
@@ -35,7 +35,7 @@ object hjFirstDump {
 			    
 	}
 	
-		def addDeltaFirstTimeNoArc(deltaDf: Dataset[Row]): Dataset[Row] = {
+		def addDeltaFirstTimeNoArc(deltaDf: DataFrame[Row]): DataFrame[Row] = {
 			    val sparkSession = deltaDf.sparkSession
           // val sortedCols = "archive_date" +: deltaDf.columns.filter(x => !x.equals("archive_date"))
 			    val sortedDelta =     deltaDf.select("archive_date" , deltaDf.columns.filter(x => !x.equals("archive_date")):_*)

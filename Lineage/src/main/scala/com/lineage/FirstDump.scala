@@ -1,8 +1,8 @@
 package com.lineage
 
 import com.lineage.RowHash
-
-import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.DataFrame
+//import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
@@ -17,7 +17,7 @@ import org.apache.spark.sql.functions._
 object FirstDump {
 
 
-	def addDeltaFirstTime(deltaDf: Dataset[Row]): Dataset[Row] = {
+	def addDeltaFirstTime(deltaDf: DataFrame): DataFrame = {
 			val sparkSession = deltaDf.sparkSession
 					val deltaDfSha = RowHash.addHash(deltaDf)
 					val deduped = deltaDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
@@ -31,7 +31,7 @@ object FirstDump {
 
 
 
-	def addDeltaFirstTimeAcl(cciDf: Dataset[Row], txDf: Dataset[Row]): Dataset[Row] = {
+	def addDeltaFirstTimeAcl(cciDf: DataFrame, txDf: DataFrame): DataFrame = {
 			val sparkSession = cciDf.sparkSession
 
 					val cciDfSha = RowHash.addHash(cciDf)
