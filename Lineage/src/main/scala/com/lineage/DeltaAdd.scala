@@ -30,7 +30,7 @@ object DeltaAdd {
 			//val sparkSession = deltaDf.sparkcontext
      //  val sqlContext = new org.apache.spark.sql.SQLContext(sc)
      //val  delta = deltaDf
-					val deltaDfSha = RowHash.addHash(deltaDf)
+					val deltaDfSha = RowHash.addHash(deltaDf,sqlContext)
 					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
 					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
 					deltaDfSha.createOrReplaceTempView("deltaDfSha")

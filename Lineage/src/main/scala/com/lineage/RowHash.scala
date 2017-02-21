@@ -1,14 +1,15 @@
 package com.lineage
-import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+ import org.apache.spark.sql.SQLContext
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 object RowHash {
-  	def addHash(deltaDf: Dataset[Row]): Dataset[Row] = {
+  	def addHash(deltaDf: DataFrame,sqlContext:SQLContext): DataFrame = {
 			    val sparkSession = deltaDf.sparkSession
 					sparkSession.udf.register("sha2m", (r: Row) => {
 						val sha2Hasher = MessageDigest.getInstance("SHA-256")
