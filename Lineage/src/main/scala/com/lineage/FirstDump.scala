@@ -42,7 +42,7 @@ object FirstDump {
 					println(".........................................................................................."+cciDfSha.count)
 					println(".........................................................................................."+txDfSha.count)
 
-					val deduped = cciDfSha.union(txDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
+					val deduped = cciDfSha.unionAll(txDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
 					val dedupedDf = sqlContext.createDataFrame(deduped, cciDfSha.schema) 
 
 
@@ -143,7 +143,7 @@ object FirstDump {
 
 					
 					 	val LatestData = sqlContext.sql("select * from  "+deltaTable) // Load latest data from impala
-								val res = addDeltaFirstTime(LatestData)
+								val res = addDeltaFirstTime(LatestData,sqlContext)
 
 								res.registerTempTable("mytempTable")
 
