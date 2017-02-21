@@ -18,12 +18,10 @@ import org.apache.spark.SparkContext
 object DeltaAdd {
 
   
-  val conf = new SparkConf().setAppName("DeltaAdd")
-	val sc = new SparkContext(conf)
-	val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+
   
   //val sc: SparkContext
-	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame): DataFrame = {
+	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame, sqlContext:SQLContext): DataFrame = {
 	  
 	  
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
@@ -31,31 +29,36 @@ object DeltaAdd {
      //  val sqlContext = new org.apache.spark.sql.SQLContext(sc)
      //val  delta = deltaDf
 					val deltaDfSha = RowHash.addHash(deltaDf,sqlContext)
-					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
-					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
-					deltaDfSha.createOrReplaceTempView("deltaDfSha")
+					initialDfShaWithDate.registerTempTable("initialDfSha")
+					val currentRowNum = sqlContext.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
+					deltaDfSha.registerTempTable("deltaDfSha")
 					import org.apache.spark.sql.functions._ 
 					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
-					val deduped = initialDfShaWithDate.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
-					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
+					val deduped = initialDfShaWithDate.unionAll(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
+					sqlContext.createDataFrame(deduped, deltaDfShaSeq.schema)
 
 	}
 
 
 	def main(args: Array[String]): Unit = {
-			    //val conf = new SparkConf().setAppName("DeltaAdd")
-					//val sc = new SparkContext(conf)
-					//val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+
 
 
 
 					val antuitStageTablename = args(0)
 					val deltaTable = args(1)
+					
+					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
+					val db = deltaTable.substring(0,deltaTable.indexOf("."))
+					
+					val conf = new SparkConf().setAppName("DeltaAdd...."+table)
+					val sc = new SparkContext(conf)
+					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+					
 					import sqlContext.implicits._
 					sqlContext.sql("insert into antuit_stage.dl_t_sequencetrack select CURRENT_TIMESTAMP,\'"+ antuitStageTablename +"\',max(sequence) from "+ antuitStageTablename)  
 
-					val table = deltaTable.substring(deltaTable.indexOf(".")+1)
-					val db = deltaTable.substring(0,deltaTable.indexOf("."))
+	
 
 					val cal = Calendar.getInstance()
 					val Date =cal.get(Calendar.DATE )
@@ -129,7 +132,7 @@ object DeltaAdd {
 						val dfDelta = dfDeltacci.unionAll(dfDeltatx)
 								if(dfDelta.count >0)
 								{
-									val res = addDeltaIncremental(dfProc, dfDelta )
+									val res = addDeltaIncremental(dfProc, dfDelta,sqlContext )
 
 											res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
 											sqlContext.sql("create table "+antuitStageTablename+"_merge like "+ antuitStageTablename)
@@ -151,7 +154,7 @@ object DeltaAdd {
 
 								if(dfDelta.count >0)
 								{
-									val res = addDeltaIncremental(dfProc, dfDelta )
+									val res = addDeltaIncremental(dfProc, dfDelta,sqlContext )
 
 											res.write.format("com.databricks.spark.csv").option("delimiter", "\u0001").save("/antuit/databases/antuit_stage/"+table+"_"+Date+"_"+Month+"_"+Hour+"_"+min+"_"+second)
 											sqlContext.sql("create table "+antuitStageTablename+"_merge like "+ antuitStageTablename)
