@@ -17,6 +17,7 @@ import org.apache.spark.SparkContext
 
 object DeltaAdd {
 
+  val sc: SparkContext
 	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame): DataFrame = {
 	  //initialDfShaWithDate.show()
 	  
