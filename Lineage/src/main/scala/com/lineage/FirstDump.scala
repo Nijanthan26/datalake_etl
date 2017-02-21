@@ -7,22 +7,24 @@ import org.apache.spark.sql.Row
 import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
+//import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.SQLContext
 
 object FirstDump {
 
 
-	def addDeltaFirstTime(deltaDf: DataFrame): DataFrame = {
-			val sparkSession = deltaDf.sparkSession
-					val deltaDfSha = RowHash.addHash(deltaDf)
-					val deduped = deltaDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
-					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
-							dedupedDf.createOrReplaceTempView("deduped")
+	def addDeltaFirstTime(deltaDf: DataFrame,sqlContext:SQLContext): DataFrame = {
+	  
+		//	val sparkSession = deltaDf.sparkSession
+					val deltaDfSha = RowHash.addHash(deltaDf,sqlContext)
+					val deduped = deltaDfSha.unionAll(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
+					val dedupedDf = sqlContext.createDataFrame(deduped, deltaDfSha.schema) 
+							dedupedDf.registerTempTable("deduped")
 							import org.apache.spark.sql.functions._ 
 							dedupedDf.withColumn("sequence", monotonically_increasing_id) 
 
@@ -31,20 +33,20 @@ object FirstDump {
 
 
 
-	def addDeltaFirstTimeAcl(cciDf: DataFrame, txDf: DataFrame): DataFrame = {
-			val sparkSession = cciDf.sparkSession
+	def addDeltaFirstTimeAcl(cciDf: DataFrame, txDf: DataFrame,sqlContext:SQLContext): DataFrame = {
+			//val sparkSession = cciDf.sparkSession
 
-					val cciDfSha = RowHash.addHash(cciDf)
-					val txDfSha = RowHash.addHash(txDf)
+					val cciDfSha = RowHash.addHash(cciDf,sqlContext)
+					val txDfSha = RowHash.addHash(txDf,sqlContext)
 
 					println(".........................................................................................."+cciDfSha.count)
 					println(".........................................................................................."+txDfSha.count)
 
 					val deduped = cciDfSha.union(txDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
-					val dedupedDf = sparkSession.createDataFrame(deduped, cciDfSha.schema) 
+					val dedupedDf = sqlContext.createDataFrame(deduped, cciDfSha.schema) 
 
 
-							dedupedDf.createOrReplaceTempView("deduped")
+							dedupedDf.registerTempTable("deduped")
 
 							import org.apache.spark.sql.functions._ 
 							dedupedDf.withColumn("sequence", monotonically_increasing_id) 
@@ -103,7 +105,7 @@ object FirstDump {
 						}
 						  
 							val dfDeltatx = sqlContext.sql(txSelectQuery) // Load the delta data from Impala
-							val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
+							val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx,sqlContext)
 							res.registerTempTable("mytempTable")
 						}else
 						{
@@ -127,7 +129,7 @@ object FirstDump {
 							}
 							    
 							    val dfDeltatx = sqlContext.sql(selectQuerytx)
-									val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx)
+									val res = addDeltaFirstTimeAcl(dfDeltacci,dfDeltatx,sqlContext)
 									//dfDeltatx.show()
 									res.registerTempTable("mytempTable")
 						}
