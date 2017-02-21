@@ -1,32 +1,36 @@
 package com.lineage
 import com.lineage.RowHash
-import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
+//import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.SQLContext
+
 object hjDeltaAdd {
 
-	def addDeltaIncremental(initialDfShaWithDate: Dataset[Row], deltaDf: Dataset[Row]):Dataset[Row] = {
+	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame,sqlContext:SQLContext):DataFrame = {
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
-					val sparkSession = deltaDf.sparkSession
-					val  delta = deltaDf
-					val commonColList = delta.columns.filter(x => !x.equals("archive_date")) 
-					val sortedDelta = delta.select("archive_date" , commonColList:_*)
-					val deltaDfSha = RowHash.addHash(sortedDelta)
-					initialDfShaWithDate.createOrReplaceTempView("initialDfSha")
-					val currentRowNum = sparkSession.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
-					deltaDfSha.createOrReplaceTempView("deltaDfSha")
+			
+					//val sparkSession = deltaDf.sparkSession
+				//	val  delta = deltaDf
+			
+					val commonColList = deltaDf.columns.filter(x => !x.equals("archive_date")) 
+					val sortedDelta = deltaDf.select("archive_date" , commonColList:_*)
+					val deltaDfSha = RowHash.addHash(sortedDelta,sqlContext)
+					initialDfShaWithDate.registerTempTable("initialDfSha")
+					val currentRowNum = sqlContext.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
+					deltaDfSha.registerTempTable("deltaDfSha")
 					import org.apache.spark.sql.functions._ 
 					val deltaDfShaSeq = deltaDfSha.withColumn("sequence", monotonically_increasing_id + currentRowNum)
-					val deduped = initialDfSha.union(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
-					sparkSession.createDataFrame(deduped, deltaDfShaSeq.schema)
+					val deduped = initialDfSha.unionAll(deltaDfShaSeq).rdd.map { row => (row.getString(row.length-2), row) }.reduceByKey((r1, r2) => r1).map { case(sha2, row) => row }
+					sqlContext.createDataFrame(deduped, deltaDfShaSeq.schema)
 
 	
 	}
@@ -42,7 +46,7 @@ object hjDeltaAdd {
 					val dfDelta = sqlContext.sql("select * from "+args(1)) // Load the delta data from Impala
 					if(dfDelta.count >0)
 					{
-						val res = addDeltaIncremental(dfProc, dfDelta )
+						val res = addDeltaIncremental(dfProc, dfDelta,sqlContext )
 								val cal = Calendar.getInstance()
 								val Date =cal.get(Calendar.DATE )
 								val Month1 =cal.get(Calendar.MONTH )
