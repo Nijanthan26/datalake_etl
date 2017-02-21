@@ -25,6 +25,6 @@ object RowHash {
 
 					deltaDf.registerTempTable("delta_table")
 
-					sqlContext.sql("select tab.*, sha2m(struct(s.*)) as sha2 from delta_table tab")
+					sqlContext.sql("select *, sha2m(struct(s.*)) as sha2 from delta_table ")
 	}
 }
