@@ -23,7 +23,7 @@ object RowHash {
 								hexString.toString()
 					})
 
-					deltaDf.registerTempTable(sqlContext,"delta_table")
+					deltaDf.saveAsTable("delta_table")
 
 					sqlContext.sql("select *, sha2m(struct(s.*)) as sha2 from delta_table ")
 	}
