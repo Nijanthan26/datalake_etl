@@ -13,7 +13,6 @@ import java.util.Calendar
 import org.apache.spark.SparkContext
 
 
-//val sc: SparkContext
 
 
 object DeltaAdd {
