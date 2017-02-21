@@ -13,7 +13,7 @@ import java.util.Calendar
 import org.apache.spark.SparkContext
 
 
-
+val sc: SparkContext
 
 
 object DeltaAdd {
@@ -22,7 +22,8 @@ object DeltaAdd {
 	  //initialDfShaWithDate.show()
 	  
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
-					val sparkSession = deltaDf.sparkcontext
+				//	val sparkSession = deltaDf.sparkcontext
+       val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 
 					val  delta = deltaDf
 					val deltaDfSha = RowHash.addHash(delta)
