@@ -1,17 +1,15 @@
 package com.lineage
 
 import org.apache.spark.sql.DataFrame
-//import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
 import org.apache.spark.sql.Dataset
 import org.apache.spark.SparkConf
-//import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 import java.util.Calendar
 import org.apache.spark.SparkContext
- import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.SQLContext
 
 
 
@@ -20,14 +18,11 @@ object DeltaAdd {
   
 
   
-  //val sc: SparkContext
+  
 	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame, sqlContext:SQLContext): DataFrame = {
 	  
 	  
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
-			//val sparkSession = deltaDf.sparkcontext
-     //  val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-     //val  delta = deltaDf
 					val deltaDfSha = RowHash.addHash(deltaDf,sqlContext)
 					initialDfShaWithDate.registerTempTable("initialDfSha")
 					val currentRowNum = sqlContext.sql("select max(sequence) from initialDfSha").collect()(0).getLong(0)
