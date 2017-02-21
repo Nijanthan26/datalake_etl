@@ -9,8 +9,9 @@ import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import scala.reflect.runtime.universe
 
+
 object RowHash {
-  	def addHash(temp: DataFrame,sqlContext:SQLContext): DataFrame = {
+  	def addHash(deltaDf: DataFrame,sqlContext:SQLContext): DataFrame = {
 			  //  val sparkSession = deltaDf.sparkSession
 					sqlContext.udf.register("sha2m", (r: Row) => {
 						val sha2Hasher = MessageDigest.getInstance("SHA-256")
@@ -23,7 +24,7 @@ object RowHash {
 								hexString.toString()
 					})
 
-					temp.registerTempTable("delta_table")
+					deltaDf.registerTempTable("delta_table")
 
 					sqlContext.sql("select *, sha2m(struct(s.*)) as sha2 from delta_table ")
 	}
