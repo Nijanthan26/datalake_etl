@@ -46,7 +46,7 @@ object DeltaAddPrqt {
 					val conf = new SparkConf().setAppName("DeltaAdd"+table)
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-				  val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc) 
+				 // val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc) 
 			
 				  import sqlContext.implicits._
 					sqlContext.sql("ALTER TABLE "+antuitStageTablename+" RENAME TO "+antuitStageTablename+"_temp")
