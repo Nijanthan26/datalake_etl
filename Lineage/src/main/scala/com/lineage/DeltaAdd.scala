@@ -22,7 +22,7 @@ object DeltaAdd {
 	  //initialDfShaWithDate.show()
 	  
 			val initialDfSha = initialDfShaWithDate//.drop("archive_date")
-					val sparkSession = deltaDf.sparkContext
+					val sparkSession = deltaDf.sparkcontext
 
 					val  delta = deltaDf
 					val deltaDfSha = RowHash.addHash(delta)
