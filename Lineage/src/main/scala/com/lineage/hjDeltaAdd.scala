@@ -1,5 +1,5 @@
 package com.lineage
-import com.lineage.RowHash
+//import com.lineage.RowHash
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.Row
 import java.security.MessageDigest
