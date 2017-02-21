@@ -13,7 +13,7 @@ import java.util.Calendar
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SQLContext
-
+import org.apache.spark.sql.hive.HiveContext
 object DeltaAddPrqt {
 
 	def addDeltaIncremental(initialDfShaWithDate: DataFrame, deltaDf: DataFrame,sqlContext:SQLContext): DataFrame = {
@@ -46,7 +46,7 @@ object DeltaAddPrqt {
 					val conf = new SparkConf().setAppName("DeltaAdd"+table)
 					val sc = new SparkContext(conf)
 					val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-				 // val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc) 
+				  val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc) 
 			
 				  import sqlContext.implicits._
 					sqlContext.sql("ALTER TABLE "+antuitStageTablename+" RENAME TO "+antuitStageTablename+"_temp")
