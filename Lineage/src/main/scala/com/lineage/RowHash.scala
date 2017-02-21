@@ -25,6 +25,6 @@ object RowHash {
 
 					deltaDf.registerTempTable("delta_table")
 
-					sparkSession.sql("select *, sha2m(struct(*)) as sha2 from delta_table")
+					sqlContext.sql("select *, sha2m(struct(*)) as sha2 from delta_table")
 	}
 }
