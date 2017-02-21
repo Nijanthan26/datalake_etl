@@ -12,6 +12,18 @@ import org.apache.spark.storage.StorageLevel._
 
 object mrsInc {
   
+  	def addDeltaFirstTime(deltaDf: Dataset[Row]): Dataset[Row] = {
+			val sparkSession = deltaDf.sparkSession
+					val deltaDfSha = RowHash.addHash(deltaDf)
+					val deduped = deltaDfSha.union(deltaDfSha).rdd.map { row => (row.getString(row.length-1), row) }.reduceByKey((r1, r2) => r1).	map { case(sha2, row) => row }
+					val dedupedDf = sparkSession.createDataFrame(deduped, deltaDfSha.schema) 
+							dedupedDf.createOrReplaceTempView("deduped")
+							import org.apache.spark.sql.functions._ 
+							dedupedDf.withColumn("sequence", monotonically_increasing_id) 
+
+
+	}
+  
   def main(args: Array[String])
   {
     
@@ -40,19 +52,23 @@ object mrsInc {
   "password" -> "R3@60n1Y$",
   "dbtable" -> table))
   
-      val mrsSourceMain = sqlContext.load("jdbc", 
+   /*   val mrsSourceMain = sqlContext.load("jdbc", 
   Map(
   "driver" -> "com.microsoft.sqlserver.jdbc.SQLServerDriver",
   "url" -> "jdbc:sqlserver://us0266sqlsrvmrs001.database.windows.net:1433;databaseName=US0266SQLDBFacilityDataMain_001",
   "user" -> "readonly",
   "password" -> "R3@60n1Y$",
   "dbtable" -> table))
-  
+  */
    val mrsDf1 = mrsSource09.unionAll(mrsSource61)
    
-   val mrsDf2 = mrsDf1.unionAll(mrsSourceMain)
+  // val mrsDf2 = mrsDf1.unionAll(mrsSourceMain)
        
-   mrsDf2.write.format("orc").saveAsTable("default.mrs_test_source");  //Change  schema and table name
+   
+		val res = addDeltaFirstTime(mrsDf1)
+		
+		
+		res.write.format("orc").saveAsTable("default.mrs_test_source");  //Change  schema and table name
     //sourceTable.write().saveAsTable("default.mrs_test_source");  //First time Import, Change  schema and table name
    /* 
     //sourceTable.show()
